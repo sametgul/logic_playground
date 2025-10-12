@@ -44,7 +44,17 @@ dout:  ----- ----- AAA   BBB
 * **WRITE\_FIRST**
   On a write, `dout_o` immediately reflects the **new write data** in that cycle.
 
-*(A “NO\_CHANGE” variant can be added later using the same generate structure.)*
+> **Note on `LAT="2_CLK"` + `WRITE_FIRST`:** The implementation **bypasses** the pipeline to drive `dout_o <= din_i` during write cycles so the port still behaves WRITE_FIRST. That means **effective latency is 0 cycles on write cycles only**. If you require **strict two-cycle latency on *all* cycles**, remove the bypass and accept that WRITE_FIRST will then be delayed by the pipeline.
+
+## 🧠 Inference & Device Notes
+
+* The RAM is declared as a VHDL array and tagged with `attribute ram_style of ram is "block";` to nudge Vivado toward **BRAM**. Very small depths may still infer **LUTRAM** if the tool decides it’s cheaper. We can remove these attributes in order to make our code portable.
+* Xilinx mapping:
+
+  * `LAT="1_CLK"` → BRAM `DOA_REG = 0` (unregistered output)
+  * `LAT="2_CLK"` → BRAM `DOA_REG = 1` (registered output)
+* This design targets **single-port** memories. For true **simple dual-port** (1 read + 1 write) or **true dual-port**, use a different architecture.
+* Initialization: the RTL resets the array to **zeros in simulation** (via default signal init). On hardware, power-up contents are **undefined** unless you add an init file / post-bitstream initialization (not included here).
 
 ## 📜 VHDL Source (single file)
 
@@ -185,6 +195,12 @@ And because `LAT = "2_CLK"`, Vivado will register the output once (`DOA_REG = 1`
 ![2\_clk latency](docs/2clk.png)
 
 > Some small memories may infer LUTRAM if the tool thinks it’s cheaper. The `ram_style = "block"` attribute above nudges Vivado to use BRAM.
+
+## Testbench
+
+I also wrote a testbench, the following is a testbench result. You can find the codes in `src/` folder.
+
+![tb](docs/testbench.png)
 
 ## References
 

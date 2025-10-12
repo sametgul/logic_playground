@@ -1,38 +1,56 @@
 # VHDL Notes: Behaviors, Pitfalls, and Useful Tricks
 
-This document collects some important behaviors and reminders that are easy to forget when writing VHDL.
+A compact field guide to VHDL semantics and safe coding patterns.
 
 
-## Process Block Behavior
+# VHDL Notes: Behaviors, Pitfalls, and Useful Tricks
 
-* Statements **inside a process** execute sequentially, in order.
-* **Different processes** run concurrently (in parallel).
-* Signal assignments inside a process take effect only **after the process suspends**.
+A compact field guide to VHDL semantics and safe coding patterns.
 
-  * You can assign multiple times to the same signal, but only the **last assignment** is visible.
+## Process Semantics (the essentials)
+
+* Inside **one process**, statements execute **sequentially** (top to bottom).
+* **Different processes** run **concurrently**.
+* **Signal** assignments update **after** the process suspends (end of delta cycle or clock edge). Multiple writes to the **same signal** inside one process resolve to the **last** one.
 * VHDL is **case-insensitive**.
 
+### Signals vs Variables (why your update “did nothing”)
+
+* **Signals** (`<=`) read the *old* value until the process suspends.
+* **Variables** (`:=`) update immediately and are visible to subsequent lines in the same process.
+
 ```vhdl
-process (clk) begin
-	if rising_edge(clk) then
-		if (sel = '0') then
-			a <= b + c;
-		else
-			a <= b - c;
-		end if;
-			a <= a + b + c;
-		if (op) then
-			a <= x"03";
-		end if;
-	end if;
+process(clk) is
+  variable tmp : unsigned(7 downto 0);
+begin
+  if rising_edge(clk) then
+    tmp := unsigned(b) + unsigned(c); -- immediate
+    a   <= std_logic_vector(tmp);     -- scheduled for after edge
+  end if;
 end process;
 ```
 
-Tip: use `'length` attributes to avoid memorizing signal widths:
+### “Last assignment wins” (inside one process)
 
 ```vhdl
-cntr1_out <= std_logic_vector(to_unsigned(cntr1, cntr1_out'length));
+process(clk) begin
+  if rising_edge(clk) then
+    if sel = '0' then
+      a <= b + c;
+    else
+      a <= b - c;
+    end if;
+
+    -- This line overrides the two above, still using OLD 'a' on RHS
+    a <= a + b + c;
+
+    if op = '1' then
+      a <= x"03";  -- This is the final value assigned this cycle
+    end if;
+  end if;
+end process;
 ```
+
 
 ## Common Combinational Pitfalls
 
@@ -44,6 +62,7 @@ When writing a **combinational process**, watch out for:
    * Otherwise: simulation mismatches.
 
 2. **Missing branches**
+Always drive every output on every path.
 
    * Every `if` should have an `else`, every `case` should have a `when others`.
    * Otherwise: unintended **latch inference**.
@@ -65,6 +84,16 @@ end process PROCESS3;
 
 Here, if `sel = '1'`, signal `a` keeps its previous value. Because this is not sequential logic, the synthesizer infers a **latch**. Vivado synthesizes it but gives a warning.
 
+```vhdl
+p_comb : process(all) is -- VHDL-2008
+begin
+  a <= (others => '0');                -- default
+  if sel = '0' then
+    a <= b + c;
+  end if;                              -- no latch because default covers else
+end process;
+```
+
 ### Example 2: Combinational Feedback
 
 ```vhdl
@@ -78,7 +107,7 @@ begin
 end process PROCESS4;
 ```
 
-Here, `a` is both read and written inside the same process. This creates a **combinational feedback loop**. Vivado synthesizes it without warnings, but it may cause oscillation or unstable behavior.
+Here, `a` is both read and written inside the same process. This creates a **combinational feedback loop**. Vivado synthesizes it without warnings, but it may cause oscillation or unstable behavior. This can even lead to damage the fpga chip.
 
 ## Hierarchy Optimization in Vivado
 
@@ -155,26 +184,23 @@ begin
 end Behavioral;
 ```
 
-## Timing Considerations
+## Clock-domain crossing (CDC) quick recipes
 
-* For **asynchronous inputs** or **crossing clock domains**:
+I will cover these in the future projects in detail.
 
-  * Use 2- or 3-stage synchronizers.
-* For **control signals**:
-
-  * Use handshake or toggle synchronizers.
-* For **data transfers**:
-
-  * Use dual-clock FIFOs or Gray-coded counters in dual-port RAMs.
+* **Single-bit control** from async/other domain → **2-FF synchronizer** (or 3-FF for extra MTBF).
+* **Pulses** → convert to **toggle** in source domain; detect edge in dest domain.
+* **Multi-bit data** → **dual-clock FIFO**, or Gray-coded counters with dual-port RAM.
+* **Handshakes** → ready/valid or req/ack with proper synchronizers on each crossing bit.
 
 
 ## Timing Closure Trick
 
 When struggling with timing violations:
 
-* Insert 2–4 flip-flops at the inputs of your design.
-* Enable **retiming** in synthesis (`Settings → Synthesis → Retiming`).
-* The synthesizer may move/redistribute these registers across logic to create a pipelined structure, improving timing.
+* Add 2–4 input registers near the top level; enable **retiming** in synthesis  (`Settings → Synthesis → Retiming`). Tools can legally move these through logic to balance paths, and may improving timing.
+* Pipeline arithmetic (DSP48s love registered inputs and mids).
+* Constrain clocks properly; avoid false/multicycle unless you fully understand them.
 
 ![register](docs/replace_registers.png)
 

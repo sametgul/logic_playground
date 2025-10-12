@@ -1,8 +1,8 @@
-# N-Bit Adder with VIO & ILA (CMOD A7)
+# N-Bit Adder with VIO (CMOD A7)
 
-This small project demonstrates how to build an **N-bit adder** using the `generate` construct in VHDL and how to drive/observe it with **VIO (Virtual I/O)** and **ILA (Integrated Logic Analyzer)** IPs in Vivado.
+This small project demonstrates how to build an **N-bit adder** using the `generate` construct in VHDL and how to drive/observe it with **VIO (Virtual I/O)** IP in Vivado.
 
-Since the **CMOD A7** board has no physical switches or LEDs, VIO is used to provide inputs and observe outputs in real time. ILA can be optionally added to monitor internal signals.
+Since the **CMOD A7** board has no physical switches or LEDs, VIO is used to provide inputs and observe outputs in real time. ILA (Integrated Logic Analyzer) can be optionally added to monitor internal signals.
 
 
 ## 1) Full Adder and N-Bit Adder
@@ -74,37 +74,31 @@ begin
 end Behavioral;
 ```
 
-> **Note:** The example assumes `i=0` is the LSB. If you prefer MSB-first indexing, adjust the mapping accordingly.
-
 
 ## 2) Using VIO in Block Design
 
 Because CMOD A7 has no external switches/LEDs, **VIO** is used to drive and observe the adder.
 
 1. Create a **Block Design**.
-2. Add the `n_bit_adder` VHDL module:
+2. **Add Module to Block Design** → pick `n_bit_adder`.
    ![addblock](docs/addblock.png)
-3. Add a **VIO** IP and connect ports:
+3. Add **Clocking Wizard** (use board clock → any clean internal clock, e.g., 50–100 MHz).
+4. Add **VIO** and connect:
    ![design1](docs/design1.png)
 
    * `A_in`, `B_in`, `C_in` → **VIO outputs**
    * `S_out`, `C_out` → **VIO inputs**
-4. Right-click the design → **Create HDL Wrapper** → *Let Vivado manage updates…*
-5. Set wrapper as **Top**.
-6. Generate bitstream and program the device.
+5. Right-click BD → **Create HDL Wrapper** (let Vivado manage) → **Set as Top**.
+6. Generate bitstream & program the FPGA.
+7. In Hardware Manager, open **VIO** → **+ Add Probes** → select signals.
 
-After programming, open the **VIO window**, click the `+` sign, and select the signals. You can now drive inputs (`A_in`, `B_in`, `C_in`) and observe outputs (`S_out`, `C_out`) live:
+You can now drive inputs (`A_in`, `B_in`, `C_in`) and observe outputs (`S_out`, `C_out`) live:
 
 ![addsigs](docs/addsigs.png)
 ![addsigs](docs/config.png)
 
+## We have done something but, what at cost
 
-## 3) Optional: Monitoring with ILA
+Your ripple adder is tiny; the debug hub + VIO eats most of the fabric in this demo. That’s normal: debug cores trade area for visibility. As you widen buses or add ILA, usage rises.
 
-For deeper debugging, add an **ILA** to probe signals. Suggested probes:
-
-* `A_in`, `B_in`, `S_out`, `C_out`
-* Internal `carry` chain
-
-With triggers set on conditions (e.g., `C_out = '1'`), you can capture events like overflow and see how carries propagate bit by bit.
-
+![util](docs/util.png)
