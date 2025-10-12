@@ -88,7 +88,3 @@ end generate G_LAT_2;
 end generate G_WRITE_FIRST;
 
 end Behavioral;
-
-## References
-
-* [VHDL ile FPGA PROGRAMLAMA](https://www.udemy.com/course/vhdl-ile-fpga-programlama-temel-seviye/)

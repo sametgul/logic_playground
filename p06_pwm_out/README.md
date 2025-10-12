@@ -178,3 +178,7 @@ The PWM high pulse widens in clean 10% steps at period boundaries, with no mid-p
 * **Latency:** Duty updates take effect one PWM period later by design (glitch-free).
 * **Synthesis:** The multiply-by-constant and division by 100 are optimized by modern tools (e.g., mapped to DSP or shift-add logic). Resource cost is minimal for typical FPGAs.
 * **Extension:** To drive an RGB LED, instantiate three copies with independent duties. For smoother low-level brightness, add a 256-entry gamma LUT on the duty path before rounding.
+
+## References
+
+1. [Mehmet Burak Aykenar - Github](https://github.com/mbaykenar/apis_anatolia)

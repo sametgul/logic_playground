@@ -1,13 +1,14 @@
 # VHDL TEMPLATE & SYNTAX NOTES
 
-These are some VHDL constructs that I frequently use and sometimes forget. I keep them here as a reference. 
+There are some VHDL constructs and rules that I sometimes forget. I keep them here as a reference. 
 
-**Style preferences**:
+**Style Preferences**:
 
 * Constants and generics in **UPPERCASE**.
 * Ports use `_in` and `_out` postfixes.
 * I like to add the width as a suffix (e.g. `_in16`).
-* Using exponantiation terms `2**N-1` is good to have.
+* Using exponentiation terms `2**N-1` is good to have.
+* Using `'length` attribute to get signal widths
 
 ```vhdl
 --------------------------------------------------------------------------------
@@ -18,22 +19,23 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
+
 --------------------------------------------------------------------------------
 -- ENTITY
 --------------------------------------------------------------------------------
 entity my_entity_name is
-    generic (
-        CLKFREQ  : integer := 100_000_000;
-        SCLKFREQ : integer := 1_000_000;
-        WIDTH    : integer := 8;
-        N        : integer := 8;
-        DEBUG    : boolean := false
-    );
-    port (
-        input1_inW     : in  std_logic_vector (WIDTH-1 downto 0);
-        input2_in      : in  std_logic;
-        output1_out32  : out std_logic_vector(31 downto 0)
-    );
+generic (
+    CLKFREQ  : integer := 100_000_000;
+    SCLKFREQ : integer := 1_000_000;
+    WIDTH    : integer := 8;
+    N        : integer := 8;
+    DEBUG    : boolean := false
+);
+port (
+    input1_in      : in  std_logic_vector (WIDTH-1 downto 0);
+    input2_in      : in  std_logic;
+    output1_out32  : out std_logic_vector(31 downto 0)
+);
 end my_entity_name;
 
 
@@ -64,6 +66,9 @@ architecture Behavioral of my_entity_name is
     signal s3    : integer := 0;                               -- default 32-bit
     signal s4    : std_logic := '0';
 
+    cntr1_out <= std_logic_vector(to_unsigned(cntr1, cntr1_out'length));
+
+
 --------------------------------------------------------------------------------
 -- BEGIN
 --------------------------------------------------------------------------------    
@@ -73,14 +78,14 @@ begin
     -- ENTITY INSTANTIATION
     --------------------------------------------------------------------------------
     inst1 : entity work.my_component
-        generic map(
-            gen1 => SCLKFREQ,
-            gen2 => '0'
-        )
-        port map(
-            in1_i  => input2_in,
-            out1_o => output1_out32
-        );
+    generic map(
+        gen1 => SCLKFREQ,
+        gen2 => '0'
+    )
+    port map(
+        in1_in  => input2_in,
+        out1_out => output1_out32
+    );
 
     --------------------------------------------------------------------------------
     -- CONCURRENT ASSIGNMENTS
@@ -121,7 +126,7 @@ begin
             when others       => s0 <= x"04";
         end case;
 
-        -- Last assignment wins (not multiple driven net)
+        -- Last assignment wins (no multiple driven net error)
         s4 <= input1_in(1) and input1_in(2) xor input2_in;
         s4 <= input1_in(1) or input1_in(2) xnor input2_in;
 
@@ -131,15 +136,15 @@ begin
     -- SEQUENTIAL PROCESS
     --------------------------------------------------------------------------------
     P_SEQUENTIAL : process (clk) begin
-        if rising_edge(clk) then
-            -- sequential logic here
-        end if;
+    if rising_edge(clk) then
+        -- sequential logic here
+    end if;
     end process P_SEQUENTIAL;
 
 end Behavioral;
 ```
 
-For writing testbenches in VHDL, I generally add the following first
+The following code generally common on sequential implementations
 
 ```vhdl
 
@@ -165,10 +170,8 @@ begin
     end process;
 
     pCLK_GEN: process begin
-        clk <= '0';
-        wait for CLK_PERIOD/2;
-        clk <= '1';
-        wait for CLK_PERIOD/2;
+        clk <= '0'; wait for CLK_PERIOD/2;
+        clk <= '1'; wait for CLK_PERIOD/2;
     end process;
 
 

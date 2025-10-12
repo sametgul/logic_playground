@@ -1,8 +1,11 @@
 # DEBOUNCER
 
-A simple, parameterizable button debouncer built as a finite state machine (FSM) with a clocked timeout counter. It supports both active-low and active-high buttons via a generic.
+A simple, parameterizable button debouncer built as a finite state machine (FSM) with a clocked timeout counter. It supports both active-low and active-high buttons via a generic. 
 
-I want deterministic behavior on edges: when the raw input toggles, we enter a transition state and wait a fixed time (debounce window). If the input stays stable until the timer expires, we commit to the new stable state; if it bounces back, we cancel.
+**Deterministic behavior on edges:** When the raw input toggles, we enter a transition state and wait a fixed time (debounce window). If the input stays stable until the timer expires, we commit to the new stable state; if it bounces back, we cancel.
+
+I put the source files in `src/` folder, in top module, I included a 2-FF input to avoid metastability situations since button is an asynchronous input.
+
 
 ## FSM Design
 
@@ -10,12 +13,7 @@ States:
 
 * `sONE` and `sZERO` — **stable** states (idle and pressed, respectively)
 * `sONEtoZERO` and `sZEROtoONE` — **transition** states (debounce window running)
-* `sINIT` — boot/reset alignment
-
-### Why `sINIT` is written this way?
-
-On power-up/reset, the button **might already be pressed**. If we blindly start in a fixed stable state, we’d produce a wrong level for the first `DEBTIME_MS`.
-So in `sINIT` we **sample the real input** (respecting `ACTIVE_LOW`) and jump to the correct stable state immediately (`sONE` if idle, `sZERO` if pressed). That removes the startup glitch.
+* `sINIT` — start FSM according to `ACTIVE_LOW` generic
 
 ### Transition logic (the core idea)
 
@@ -45,7 +43,7 @@ generic (
 ```
 
 * **Rule of thumb** for buttons: 5–20 ms is common; 10 ms is a safe default.
-* If you’re using CMOD A7’s buttons, keep `ACTIVE_LOW = true`.
+* If you’re using CMOD A7’s buttons, keep `ACTIVE_LOW = false`.
 
 ### Here is the whole code:
 
@@ -84,23 +82,11 @@ begin
             case state is 
                 when sINIT =>
                     if ACTIVE_LOW = true then
-                        -- ACTIVE_LOW: normal='1', pressed='0'
-                        if sig_in = '1' then
                             state   <= sONE;
                             sig_out <= '1';
-                        else
-                            state   <= sZERO;
-                            sig_out <= '0';
-                        end if;
                     else
-                        -- ACTIVE_HIGH: normal='0', pressed='1'
-                        if sig_in = '0' then
                             state   <= sZERO;
                             sig_out <= '0';
-                        else
-                            state   <= sONE;
-                            sig_out <= '1';
-                        end if;
                     end if;
                     
                 when sONE =>
@@ -253,3 +239,7 @@ Tip: Put `state`, `tim_en`, `tim_tick`, `timer`, `sig_in`, and `sig_out` on your
 ## Metastability (important, but out of scope)
 
 This module assumes `sig_in` is already synchronized. In real hardware, **asynchronous** inputs (like buttons) should pass through a **2-FF synchronizer** before hitting the FSM to avoid rare metastability artifacts. If you want a production-ready block, add that in front of `debouncer` (or wrap it inside).
+
+## References
+
+* [Mehmet Burak Aykenar - Github Repo](https://github.com/mbaykenar)
