@@ -19,7 +19,7 @@ The free-running counter `timer` counts from `0` to `TIM_LIM-1`, and this fully 
 
 * **Rounded high-time**: Converting a percentage to ticks is done as:
 
-  ```
+  ```bash
   high_time = round(TIM_LIM * duty / 100)
             = (TIM_LIM * duty + 50) / 100
   ```
@@ -167,6 +167,7 @@ begin
 end Behavioral;
 
 ```
+
 ### Expected waveform
 
 The PWM high pulse widens in clean 10% steps at period boundaries, with no mid-period glitches, matching the double-buffered behavior:
@@ -182,3 +183,6 @@ The PWM high pulse widens in clean 10% steps at period boundaries, with no mid-p
 ## References
 
 1. [Mehmet Burak Aykenar - Github](https://github.com/mbaykenar/apis_anatolia)
+
+---
+⬅️  [MAIN PAGE](../README.md)

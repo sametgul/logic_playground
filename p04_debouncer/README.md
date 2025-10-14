@@ -1,11 +1,10 @@
 # DEBOUNCER
 
-A simple, parameterizable button debouncer built as a finite state machine (FSM) with a clocked timeout counter. It supports both active-low and active-high buttons via a generic. 
+A simple, parameterizable button debouncer built as a finite state machine (FSM) with a clocked timeout counter. It supports both active-low and active-high buttons via a generic.
 
 **Deterministic behavior on edges:** When the raw input toggles, we enter a transition state and wait a fixed time (debounce window). If the input stays stable until the timer expires, we commit to the new stable state; if it bounces back, we cancel.
 
 I put the source files in `src/` folder, in top module, I included a 2-FF input to avoid metastability situations since button is an asynchronous input.
-
 
 ## FSM Design
 
@@ -25,12 +24,11 @@ States:
 
 The timeout counter is sized as:
 
-```
+```bash
 TIM_LIM = (CLK_FREQ / 1000) * DEBTIME_MS
 ```
 
 Example: 12 MHz, 5 ms → `TIM_LIM = 60_000`.
-
 
 ## Generics
 
@@ -45,8 +43,7 @@ generic (
 * **Rule of thumb** for buttons: 5–20 ms is common; 10 ms is a safe default.
 * If you’re using CMOD A7’s buttons, keep `ACTIVE_LOW = false`.
 
-### Here is the whole code:
-
+### Here is the whole code
 
 ```vhdl
 library IEEE;
@@ -221,6 +218,7 @@ begin
 
 end Behavioral;
 ```
+
 ## Simulation
 
 The waveform below shows:
@@ -242,4 +240,7 @@ This module assumes `sig_in` is already synchronized. In real hardware, **asynch
 
 ## References
 
-* [Mehmet Burak Aykenar - Github Repo](https://github.com/mbaykenar)
+1. [Mehmet Burak Aykenar - Github Repo](https://github.com/mbaykenar)
+
+---
+⬅️  [MAIN PAGE](../README.md)
