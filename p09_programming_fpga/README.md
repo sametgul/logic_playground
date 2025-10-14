@@ -56,3 +56,6 @@ Once complete, the design will automatically load from flash on power-up.
 
 1. [Cmod A7 Programming Guide](https://digilent.com/reference/learn/programmable-logic/tutorials/cmod-a7-programming-guide/start)
 2. [Cmod A7 GPIO Demo](https://digilent.com/reference/programmable-logic/cmod-a7/demos/gpio)
+
+---
+⬅️  [MAIN PAGE](../README.md)

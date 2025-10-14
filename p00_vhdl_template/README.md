@@ -1,6 +1,6 @@
 # VHDL TEMPLATE & SYNTAX NOTES
 
-There are some VHDL constructs and rules that I sometimes forget. I keep them here as a reference. 
+There are some VHDL constructs and rules that I sometimes forget. I keep them here as a reference.
 
 **Style Preferences**:
 
@@ -181,4 +181,7 @@ end Behavioral;
 
 ## References
 
-* [Mehmet Burak Aykenar - Github Repo](https://github.com/mbaykenar)
+1. [Mehmet Burak Aykenar - Github Repo](https://github.com/mbaykenar)
+
+---
+⬅️  [MAIN PAGE](../README.md)

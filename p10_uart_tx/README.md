@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # UART Transmitter (VHDL)
 
 A minimal, synthesizable UART **TX** for FPGA boards (tested on **CMOD A7**) and a clean testbench. The design is **8-N-1/2** style (8 data bits, no parity, 1 or 2 stop bits), LSB-first, idle level high.
@@ -22,6 +23,13 @@ Idle line is `1`. A frame is:
 * **8 data bits**: LSB first
 * **STOP_BIT** stop bits: `1`
 
+=======
+# UART Transmitter
+
+This is a simple UART transmitter project that is tested on CMOD A7 via HTERM.
+
+Basically, the communication packet is as follows,
+>>>>>>> 3ab29cef011cf45b094f02ae3b851ddc3e023f5f
 ![timing](docs/uart_timing.png)
 
 ---
@@ -87,6 +95,7 @@ Expected waveform (ModelSim/Questa/XSIM):
 
 ![testbench](docs/testbench.png)
 
+<<<<<<< HEAD
 ---
 
 ## Integration Tips
@@ -140,3 +149,12 @@ For a byte `D7..D0`, the serial order on the wire is:
 `Start(0) → D0 → D1 → D2 → D3 → D4 → D5 → D6 → D7 → Stop(1...1)`.
 
 `0xAB = 1010_1011₂` therefore transmits `1,1,0,1,0,1,0,1` after the start bit.
+=======
+## References
+
+1. [Mehmet Burak Aykenar - Github](https://github.com/mbaykenar/apis_anatolia)
+2. [Universal Asynchronous Receiver Transmitter (UART)](https://vanhunteradams.com/Protocols/UART/UART.html)
+
+---
+⬅️  [MAIN PAGE](../README.md)
+>>>>>>> 3ab29cef011cf45b094f02ae3b851ddc3e023f5f

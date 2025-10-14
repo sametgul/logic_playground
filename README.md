@@ -3,6 +3,7 @@
 A collection of FPGA learning projects and reference implementations—VHDL RTL, Vivado IP–based designs, MicroBlaze/Zynq SoC examples, and DSP-on-FPGA exercises—organized for quick study and reuse.
 
 ## VHDL/RTL Design
+
 1. [VHDL TEMPLATE & SYNTAX NOTES](p00_vhdl_template/README.md)
 2. [VHDL Notes: Behaviors, Pitfalls, and Useful Tricks](p01_vhdl_tricks/README.md)
 3. [BRAM USAGE — Single-Port Block RAM](p02_block_ram/README.md)
@@ -16,6 +17,7 @@ A collection of FPGA learning projects and reference implementations—VHDL RTL,
 11. [UART Receiver](p11_uart_rx/README.md)
 
 ## DSP
+
 1. [Sine Wave Generation using Xilinx DDS Compiler](p08_sine_dds_block/README.md)
 
 ## Credits

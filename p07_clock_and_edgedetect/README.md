@@ -33,18 +33,18 @@ begin
   q <= r_q;
 end rtl;
   ```
+
 * Synthesizes to a **single D flip-flop**.
 * On every rising edge of `clk`, the input `d` is sampled and stored in `q`.
 * `q` only changes **after** the clock edge, never in between.
 
 **Mental model:**
 
-```
+```bash
 d ──► [D FF] ──► q
          ▲
         clk
 ```
-
 
 ## 2. Edge Detection with `sig` + `sig_prev`
 
@@ -90,10 +90,11 @@ begin
   end process;
 end rtl;
   ```
+
 * This creates a pulse (`rising=1`) **only when** `sig` transitions from 0 → 1.
 * Internally it’s like **two flip-flops plus combinational logic**:
 
-```
+```bash
 sig ──►[FF]── sig_prev ───┐
         ▲                 │
        clk                ├─► AND ─►[FF]─► rising
@@ -242,7 +243,6 @@ end sim;
 ```
 
 ![ed](docs/edge_detect.png)
----
 
 ## 7. Key Takeaway
 
@@ -254,3 +254,4 @@ end sim;
   * `rising` = event pulse derived from comparing the two.
 
 ---
+⬅️  [MAIN PAGE](../README.md)
