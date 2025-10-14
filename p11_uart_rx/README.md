@@ -1,94 +1,76 @@
 # UART Receiver (VHDL)
 
-A compact, synthesizable **UART RX** for FPGA boards (verified with **CMOD A7** loopback and a self-checking testbench). The receiver targets the classic **8-N-1/2** framing (8 data bits, no parity, 1 or 2 stop bits transmitted by the peer). Line idles high; data is LSB-first.
+A compact, synthesizable **UART RX** for FPGA boards (verified on **CMOD A7**). It targets the classic **8-N-1/2** framing (8 data bits, no parity, one or two stop bits from the transmitter). Line idles high; data is LSB-first.
 
 ---
 
 ## Features
 
-* **Parametric** clock and baud via generics
-  `CLK_FREQ`, `BAUD_RATE`
-* **Single-sample, mid-bit timing** (no oversampling) with clean start-bit qualification
-* One-byte output with a **read strobe** `read_done` asserted for one bit period after a valid frame
-* Straightforward 4-state FSM
+* Parametric clock and baud via `CLK_FREQ`, `BAUD_RATE`.
+* **Mid-bit sampling** without oversampling: start bit is re-checked at **T/2**, data bits sampled every **T**.
+* One-byte output with a **read strobe** `read_done` asserted for one bit period at the end of a valid frame.
+* Clean 4-state FSM.
 
 ---
 
-## UART Frame (what the RX expects)
+## Frame & Sampling
 
-Idle `1` → **Start** `0` → **D0..D7** (LSB first) → **Stop** `1` (at least one)
+Idle `1` → **Start** `0` → **D0..D7** (LSB first) → **Stop** `1` (≥1 bit).
 
-![timing](../p11_uart_rx/docs/uart_timing.png)
+The **red vertical marks** on the timing figure are the exact sampling instants:
+
+* first at **T/2** (to validate the start bit),
+* then every **T** for the 8 data bits and the stop bit.
+
+![timing](docs/uart_timing.png)
+
+Sampling schedule:
+
+$$
+BAUD\_TICKS=\frac{CLK\_FREQ}{BAUD\_RATE},\qquad
+sample\ times=T/2,\ T/2+T,\ T/2+2T,\ldots
+$$
 
 ---
 
-## Architecture
-
-### Parameters
-
-Bit timing derived from the system clock:
-
-$$
-BAUD\_TICKS=\frac{CLK\_FREQ}{BAUD\_RATE}
-$$
-
-Internal counters:
-
-* `timer` — counts `0 .. BAUD_TICKS−1`
-* `bit_cnt` — counts received data bits `0 .. 7`
-
-### State machine
+## State Machine
 
 ![fsm](docs/fsm_rx.png)
 
 `IDLE → START → DATA → STOP → IDLE`
 
-* **IDLE**
-  Wait for falling edge (`rx_in='0'`).
+* **IDLE** – wait for falling edge (`rx_in='0'`).
+* **START** – wait **T/2** and re-sample; if still `0`, it’s a valid start.
+* **DATA** – sample every **T**, shift LSB-first into the byte; after 8 bits, go to STOP.
+* **STOP** – sample once more after **T**; if high, assert `read_done='1'` for one bit time and return to IDLE.
 
-* **START**
-  Wait **half a bit** (mid-start) and re-sample.
-  If still `0`, the start is valid → load `DATA`; otherwise return to `IDLE`.
+Notes:
 
-* **DATA**
-  Every `BAUD_TICKS`, sample `rx_in` and shift into a byte (LSB first).
-  After 8 bits, proceed to `STOP`.
-
-* **STOP**
-  After one full bit time at logic `1`, present the byte on `data_out` and assert `read_done='1'` for one bit interval, then return to `IDLE`.
-
-> Notes
-> • The RX tolerates **1 or more** stop bits on the line (peer-selectable).
-> • No parity is checked. Extend by inserting a PARITY state if needed.
+* Works with 1 **or more** stop bits from the peer.
+* No parity; add a PARITY state if you need it.
 
 ---
 
 ## I/O
 
 * `rx_in` — asynchronous serial input (idle high)
-* `data_out[7:0]` — captured byte, valid when `read_done='1'`
-* `read_done` — one-shot pulse after a valid frame
+* `data_out[7:0]` — received byte (stable while `read_done='1'`)
+* `read_done` — one-shot end-of-frame pulse
 
 ---
 
-## Top-level example (CMOD A7)
+## Top-Level (CMOD A7 demo)
 
-In the top module assigned the last two bits of the received data to the LEDs since CMOD A7 only have 2 LEDs.
+The demo assigns the **last two bits** of `data_out` to the two on-board LEDs and feeds the board’s **UART TXD** into `uart_txd_in` (the RX input). Adjust your XDC accordingly.
 
 ---
 
 ## Testbench
 
-`tb_uart_rx.vhd` drives a synthesized UART waveform into `rx_in`:
-
-* 100 MHz clock
-* Baud = 115 200
-* Sends a few bytes with proper start/stop timing
-* Checks `read_done` and captures `data_out`
-
-Waveforms shows mid-bit sampling at the centers of each data bit and a clean `read_done` pulse after the stop bit.
+`tb_uart_rx.vhd` generates a correct UART waveform at 115 200 Bd on a 100 MHz clock, sends several bytes, and observes `read_done` and `data_out`. You should see sampling aligned to the red marks (mid-start, then per-bit).
 
 ![tb](docs/tb.png)
+
 ---
 
 ## Files
@@ -96,7 +78,19 @@ Waveforms shows mid-bit sampling at the centers of each data bit and a clean `re
 * `uart_rx.vhd` — receiver RTL
 * `top.vhd` — CMOD A7 demo wrapper
 * `tb_uart_rx.vhd` — simulation testbench
+* `docs/uart_timing.png` — frame with sampling instants (red lines)
+* `docs/fsm_rx.png` — RX FSM
+* `docs/tb.png` — expected waveform
 
+---
+
+## Integration tips
+
+* Keep `CLK_FREQ/BAUD_RATE` close to an integer; standard UARTs tolerate a few percent mismatch.
+* Back-to-back frames at full baud are supported; the core returns to `IDLE` immediately after `read_done` de-asserts.
+* For noisy lines, extend to 3×/8×/16× oversampling and majority voting; this RX is the lean, single-sample version.
+
+---
 
 ## References
 
