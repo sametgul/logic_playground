@@ -4,7 +4,6 @@ This small project demonstrates how to build an **N-bit adder** using the `gener
 
 Since the **CMOD A7** board has no physical switches or LEDs, VIO is used to provide inputs and observe outputs in real time. ILA (Integrated Logic Analyzer) can be optionally added to monitor internal signals.
 
-
 ## 1) Full Adder and N-Bit Adder
 
 A **full adder** sums three inputs (`A`, `B`, `Cin`) and produces a **Sum (S)** and **Carry-out (Cout)**.
@@ -74,7 +73,6 @@ begin
 end Behavioral;
 ```
 
-
 ## 2) Using VIO in Block Design
 
 Because CMOD A7 has no external switches/LEDs, **VIO** is used to drive and observe the adder.
@@ -102,3 +100,6 @@ You can now drive inputs (`A_in`, `B_in`, `C_in`) and observe outputs (`S_out`, 
 Your ripple adder is tiny; the debug hub + VIO eats most of the fabric in this demo. That’s normal: debug cores trade area for visibility. As you widen buses or add ILA, usage rises.
 
 ![util](docs/util.png)
+
+---
+⬅️  [MAIN PAGE](../README.md)

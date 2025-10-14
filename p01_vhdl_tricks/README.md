@@ -2,11 +2,6 @@
 
 A compact field guide to VHDL semantics and safe coding patterns.
 
-
-# VHDL Notes: Behaviors, Pitfalls, and Useful Tricks
-
-A compact field guide to VHDL semantics and safe coding patterns.
-
 ## Process Semantics (the essentials)
 
 * Inside **one process**, statements execute **sequentially** (top to bottom).
@@ -50,7 +45,6 @@ process(clk) begin
   end if;
 end process;
 ```
-
 
 ## Common Combinational Pitfalls
 
@@ -193,7 +187,6 @@ I will cover these in the future projects in detail.
 * **Multi-bit data** → **dual-clock FIFO**, or Gray-coded counters with dual-port RAM.
 * **Handshakes** → ready/valid or req/ack with proper synchronizers on each crossing bit.
 
-
 ## Timing Closure Trick
 
 When struggling with timing violations:
@@ -206,4 +199,7 @@ When struggling with timing violations:
 
 ## References
 
-* [VHDL ile FPGA PROGRAMLAMA](https://www.udemy.com/course/vhdl-ile-fpga-programlama-temel-seviye/)
+1. [VHDL ile FPGA PROGRAMLAMA](https://www.udemy.com/course/vhdl-ile-fpga-programlama-temel-seviye/)
+
+---
+⬅️  [MAIN PAGE](../README.md)

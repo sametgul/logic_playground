@@ -95,3 +95,6 @@ I also routed `wrt_done` to a pin to verify the update frequency — it matches 
 ![wdone](docs/wdone.png)
 
 There is also a `top.vhd` in `src/` so you can run the same test without creating a block design. Testbench files are in the `tb/` folder.
+
+---
+⬅️  [MAIN PAGE](../README.md)
