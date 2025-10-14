@@ -165,12 +165,15 @@ $$
 *Note: FTW values are rounded to the nearest integer.*
 
 ---
+
 ## Bonus
+
 We can also get both sine and cosine signals at the same time by choosing `Sine and Cosine` at the output selection and seperate them like the following way.
 ![bd2](docs/block_design2.png)
 ![tb2](docs/testbench2.png)
 
 ---
+
 ## Summary
 
 * A 32-bit DDS accumulator running at 100 MHz yields a frequency resolution of ~0.023 Hz.
@@ -179,3 +182,5 @@ We can also get both sine and cosine signals at the same time by choosing `Sine 
 * The design is fully parameterized and can be extended for programmable sweeps or dynamic frequency control.
 * The quick reference table makes it easy to choose FTW values for common target frequencies.
 
+---
+⬅️  [MAIN PAGE](../README.md)

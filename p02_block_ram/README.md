@@ -20,7 +20,7 @@ It supports **READ\_FIRST** and **WRITE\_FIRST** modes and configurable read lat
 
 `dout_o` updates **one clock** after address changes.
 
-```
+```bash
 clk:   ┌─┐   ┌─┐   ┌─┐
 addr:  AAAAA BBBBB CCCCC
 dout:  ----- AAA   BBB
@@ -30,7 +30,7 @@ dout:  ----- AAA   BBB
 
 Additional output register → **two clocks** of latency. Helps timing closure.
 
-```
+```bash
 clk:   ┌─┐   ┌─┐   ┌─┐   ┌─┐
 addr:  AAAAA BBBBB CCCCC
 dout:  ----- ----- AAA   BBB
@@ -204,4 +204,7 @@ I also wrote a testbench, the following is a testbench result. You can find the 
 
 ## References
 
-* [VHDL ile FPGA PROGRAMLAMA](https://www.udemy.com/course/vhdl-ile-fpga-programlama-temel-seviye/)
+1. [VHDL ile FPGA PROGRAMLAMA](https://www.udemy.com/course/vhdl-ile-fpga-programlama-temel-seviye/)
+
+---
+⬅️  [MAIN PAGE](../README.md)
