@@ -16,6 +16,12 @@ A collection of FPGA learning projects and reference implementations—VHDL RTL,
 10. [UART Transmitter](p10_uart_tx/README.md)
 11. [UART Receiver](p11_uart_rx/README.md)
 
+## Microblaze
+
+
+
+## Labview
+
 ## DSP
 
 1. [Sine Wave Generation using Xilinx DDS Compiler](p08_sine_dds_block/README.md)
