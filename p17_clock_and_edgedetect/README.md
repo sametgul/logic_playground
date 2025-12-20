@@ -98,8 +98,8 @@ end rtl;
 sig ──►[FF]── sig_prev ───┐
         ▲                 │
        clk                ├─► AND ─►[FF]─► rising
-sig ──────────────────────┘        ▲
-                                   clk
+sig ──────────────────────┘           ▲
+                                     clk
 ```
 
 ---
