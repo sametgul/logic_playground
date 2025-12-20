@@ -1,4 +1,4 @@
-# LOGIC PLAYGROUND in VHDL
+# LOGIC PLAYGROUND
 
 A collection of FPGA learning projects and reference implementations—VHDL RTL, Vivado IP–based designs, MicroBlaze/Zynq SoC examples, and DSP-on-FPGA exercises—organized for quick study and reuse.
 
@@ -11,21 +11,21 @@ A collection of FPGA learning projects and reference implementations—VHDL RTL,
 4. [**DEBOUNCER (FSM)**](p04_debouncer/README.md)
 5. [Percentage-based PWM OUT](p05_pwm_out/README.md)
 6. [**Clock Tick-based PWM OUT**](p06_pwm_tick_out/README.md)
-8. [Edge Detection & D Flip-Flop Notes](p07_clock_and_edgedetect/README.md)
-9. [Programming FPGA with Quad SPI Flash](p09_programming_fpga/README.md)
-10. [UART Transmitter](p10_uart_tx/README.md)
-11. [UART Receiver](p11_uart_rx/README.md)
-3. [BRAM USAGE — Single-Port Block RAM](p02_block_ram/README.md)
+7. [**UART Transmitter**](p07_uart_tx/README.md)
+8. [**UART Receiver**](p08_uart_rx/README.md)
+9. [BRAM USAGE — Single-Port Block RAM](p09_block_ram/README.md)
+17. [Edge Detection & D Flip-Flop Notes](p17_clock_and_edgedetect/README.md)
 
-## Driver
+## Vivado
+9. [Programming FPGA with Quad SPI Flash](v00_programming_fpga/README.md)
+
+## Drivers
 6. [PMODDA4 Driver (DAC AD5628)](p05_pmodda4_driver/README.md)
 
-## Microblaze
 
+## IPs
 
-## DSP
-
-1. [Sine Wave Generation using Xilinx DDS Compiler](p08_sine_dds_block/README.md)
+1. [Sine Wave Generation using Xilinx DDS Compiler](ip00_sine_dds_block/README.md)
 
 ## Credits
 
