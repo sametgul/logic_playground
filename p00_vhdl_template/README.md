@@ -1,8 +1,8 @@
 # VHDL TEMPLATE & SYNTAX NOTES
 
-There are some VHDL constructs and rules that I sometimes forget. I keep them here as a reference.
+There are some VHDL constructs and rules that I keep them here as a reference.
 
-**Style Preferences**:
+**My Style Preferences**:
 
 * Constants and generics in **UPPERCASE**.
 * Ports use `_in` and `_out` postfixes.
@@ -48,7 +48,7 @@ architecture Behavioral of my_entity_name is
     -- CONSTANTS
     --------------------------------------------------------------------------------
     constant CONSTANT1      : integer := 30;
-    constant TIMERLIM_1MS   : integer := CLKFREQ / 1000;
+    constant TIMERLIM_1mS   : integer := CLKFREQ / 1000;
     constant CONSTANT2      : std_logic_vector (WIDTH-1 downto 0) := (others => '0');
 
     --------------------------------------------------------------------------------
@@ -151,10 +151,10 @@ The following code generally common on sequential implementations
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
-entity tb_pmodda4 is
-end tb_pmodda4;
+entity tb_top is
+end tb_top;
 
-architecture Behavioral of tb_pmodda4 is
+architecture Behavioral of tb_top is
 
     constant CLK_PERIOD : time      := 10 ns;
     signal   clk        : std_logic := '0';

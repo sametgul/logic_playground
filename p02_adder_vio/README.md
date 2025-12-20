@@ -31,11 +31,6 @@ begin
 end Behavioral;
 ```
 
-The **N-bit adder** is created by chaining full adders in a generate loop. `carry(0)` is tied to the external `C_in`, and the final `carry(N)` becomes the `C_out`.
-
-In the sources, you’ll see N instances (`adder_i`) generated:
-
-![n\_adder](docs/n_adder.png)
 
 ```vhdl
 library IEEE;
@@ -73,6 +68,12 @@ begin
 end Behavioral;
 ```
 
+The **N-bit adder** is created by chaining full adders in a generate loop. `carry(0)` is tied to the external `C_in`, and the final `carry(N)` becomes the `C_out`.
+
+In the sources, you’ll see N instances (`adder_i`) generated:
+
+![n\_adder](docs/n_adder.png)
+
 ## 2) Using VIO in Block Design
 
 Because CMOD A7 has no external switches/LEDs, **VIO** is used to drive and observe the adder.
@@ -97,7 +98,7 @@ You can now drive inputs (`A_in`, `B_in`, `C_in`) and observe outputs (`S_out`, 
 
 ## We have done something but, what at cost
 
-Your ripple adder is tiny; the debug hub + VIO eats most of the fabric in this demo. That’s normal: debug cores trade area for visibility. As you widen buses or add ILA, usage rises.
+The ripple adder is tiny; the debug hub + VIO eats lots of the fabric in this demo. That’s normal: debug cores trade area for visibility. As you widen buses or add ILA, usage rises.
 
 ![util](docs/util.png)
 

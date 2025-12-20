@@ -1,10 +1,10 @@
-# DEBOUNCER
+# DEBOUNCER (FSM)
 
 A simple, parameterizable button debouncer built as a finite state machine (FSM) with a clocked timeout counter. It supports both active-low and active-high buttons via a generic.
 
 **Deterministic behavior on edges:** When the raw input toggles, we enter a transition state and wait a fixed time (debounce window). If the input stays stable until the timer expires, we commit to the new stable state; if it bounces back, we cancel.
 
-I put the source files in `src/` folder, in top module, I included a 2-FF input to avoid metastability situations since button is an asynchronous input.
+I put the source files in `src/` folder, in top module and included a 2-FF input to avoid metastability situations since the input button is an asynchronous input.
 
 ## FSM Design
 
