@@ -178,6 +178,16 @@ begin
 end Behavioral;
 ```
 
+## Timing Closure Trick
+
+When struggling with timing violations:
+
+* Add 2–3 input registers in front of the inputs of an entity; enable **retiming** in synthesis  (`Settings → Synthesis → Retiming`). Tools can legally move these through logic to balance paths, and may improving timing.
+* Pipeline arithmetic (DSP48s love registered inputs and mids).
+* Constrain clocks properly; avoid multicycle clocking unless you fully understand them.
+
+![register](docs/replace_registers.png)
+
 ## Clock-domain crossing (CDC) quick recipes
 
 I will cover these in the future projects in detail.
@@ -186,16 +196,6 @@ I will cover these in the future projects in detail.
 * **Pulses** → convert to **toggle** in source domain; detect edge in dest domain.
 * **Multi-bit data** → **dual-clock FIFO**, or Gray-coded counters with dual-port RAM.
 * **Handshakes** → ready/valid or req/ack with proper synchronizers on each crossing bit.
-
-## Timing Closure Trick
-
-When struggling with timing violations:
-
-* Add 2–4 input registers near the top level; enable **retiming** in synthesis  (`Settings → Synthesis → Retiming`). Tools can legally move these through logic to balance paths, and may improving timing.
-* Pipeline arithmetic (DSP48s love registered inputs and mids).
-* Constrain clocks properly; avoid false/multicycle unless you fully understand them.
-
-![register](docs/replace_registers.png)
 
 ## References
 
