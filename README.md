@@ -11,8 +11,8 @@ A structured personal reference for FPGA development — covering RTL fundamenta
 | 0 | [VHDL Template & Syntax Notes](vhd00_vhdl_template/README.md) |
 | 1 | [VHDL Notes: Behaviors, Pitfalls, and Useful Tricks](vhd01_vhdl_tricks/README.md) |
 | 2 | [N-Bit Adder with VIO (Cmod A7)](vhd02_adder_vio/README.md) |
-| 3 | [Button-Selectable Timer & LED Counter](vhd03_tim_cnt/README.md) |
-| 4 | [Debouncer (FSM)](p04_debouncer/README.md) |
+| 3 | [Debouncer (FSM)](vhd03_debouncer/README.md) |
+| 4 | [Button-Selectable Timer & LED Counter](vhd04_tim_cnt/README.md) |
 | 5 | [Percentage-based PWM Output](p05_pwm_out/README.md) |
 | 6 | [Clock Tick-based PWM Output](p06_pwm_tick_out/README.md) |
 | 7 | [UART Transmitter](p07_uart_tx/README.md) |
