@@ -1,53 +1,76 @@
 # Button-Selectable Timer & LED Counter
 
-This module implements a **clock-based timer with selectable periods**, controlled by two push buttons, and drives a **2-bit LED counter**.
+In the previous project, we built a [Debouncer](vhd03_debouncer/README.md) — now it's time to use it. This project implements a **clock-based timer with selectable periods**, controlled by a single push button, driving a **2-bit LED counter**. Target board is CMOD A7 so peripherals are limited to one button and two LEDs, but the design scales easily.
+
+Source files are in `src/` as usual.
 
 ## Core Idea
-A free-running counter increments whenever a timer reaches a programmable limit.  
-The timer limit is changed at runtime using buttons, effectively changing the **blink / count rate**.
+
+A free-running timer increments every clock cycle. When it reaches a programmable limit (`timer_lim`), the 2-bit LED counter increments and the timer resets. Pressing the button cycles `timer_lim` through four presets, changing the **blink rate** in real time.
 
 ## Clock & Timing
-- `CLK_FREQ` is a generic (default **12 MHz**)
-- Timing constants are derived directly from it:
-  - **250 ms** → `CLK_FREQ / 4`
-  - **500 ms** → `CLK_FREQ / 2`
-  - **1 s** → `CLK_FREQ`
-  - **2 s** → `CLK_FREQ * 2`
 
-This makes the design **portable across different clock frequencies**.
+`CLK_FREQ` is a generic (default **12 MHz**). The four timing constants are derived directly from it:
 
-## Counter Logic (`p_COUNTER`)
-- `timer` increments on every rising clock edge
-- When `timer == timer_lim`:
-  - `counter` increments (2-bit, natural wrap-around)
-  - `timer` resets to 0
-- `led <= counter`, LEDs directly display the counter value
+| State        | Constant   | Value             |
+|--------------|------------|-------------------|
+| `s_LIM2S`    | `LIM2S`    | `CLK_FREQ * 2`    |
+| `s_LIM1S`    | `LIM1S`    | `CLK_FREQ`        |
+| `s_LIM500mS` | `LIM500mS` | `CLK_FREQ / 2`    |
+| `s_LIM250mS` | `LIM250mS` | `CLK_FREQ / 4`    |
 
-## Timer Selection FSM (`p_LIM_CHOICE`)
-- Uses a **finite state machine** (`lim_state`) to track the active timing mode:
-  - `s_250mS`, `s_500mS`, `s_1S`, `s_2S`
-- Button presses are detected using **edge detection** via `btn_prev`
+This makes the design portable — changing `CLK_FREQ` at instantiation recalculates all limits automatically.
 
-### Button Functions
-- `btn(0)` → increase period (slower counting)
-  - 250 ms → 500 ms → 1 s → 2 s
-- `btn(1)` → decrease period (faster counting)
-  - 2 s → 1 s → 500 ms → 250 ms
+## Counter Logic (`pTIMER`)
 
-No wrap-around beyond the min/max limits (states are clamped).
+`timer` increments every rising edge. When it reaches `timer_lim`:
 
-## Design Notes
-- Clear separation of concerns:
-  - One process for timing & counting
-  - One process for button handling & FSM
-- Edge detection prevents repeated triggers while holding a button
-- Integer-based timers are simple and readable, assuming synthesis supports the range
+- `timer` resets to 0
+- `counter` increments (2-bit `unsigned`, wraps naturally at 3 → 0)
+- `led <= counter` drives the LEDs directly
 
-## Use Cases
-- Learning **clock-derived timing**
-- Basic **button edge detection**
-- FSM-controlled runtime parameter changes
-- Human-visible timing effects on FPGA (LED blink rates)
+Note: the check `if counter = 15` in the code is unreachable since `counter` is 2-bit — it wraps at 3 automatically via `unsigned` overflow. That line can be safely removed.
+
+## Button FSM & Edge Detection (`pBTN`)
+
+A simple FSM cycles through the four timing states on each button press:
+
+```
+s_LIM2S → s_LIM1S → s_LIM500mS → s_LIM250mS → s_LIM2S → ...
+```
+
+Button presses are edge-detected using a `btn0_prev` register:
+
+```vhdl
+if btn0_debounced = '1' and btn0_prev = '0' then
+    -- rising edge detected → change state
+end if;
+btn0_prev <= btn0_debounced;
+```
+
+`btn0_prev` captures the debounced button value from the previous cycle. The condition fires only on the transition from `'0'` to `'1'` — a clean single-cycle pulse regardless of how long the button is held.
+
+Note the pre-assignment pattern here: `timer_lim` is updated in the current state alongside the state transition — not at the entry of the next state — so it takes effect exactly when the FSM arrives at the new state. This is the same 1-cycle scheduling behavior covered in the [Debouncer](vhd03_debouncer/README.md#pre-assigning-signals-before-a-state-transition).
+
+## Debouncer Instantiation
+
+The debouncer from the previous project is instantiated directly:
+
+```vhdl
+inst_DEB: entity work.debouncer 
+generic map(
+    CLK_FREQ   => 12_000_000,
+    DEBTIME_MS => 5,               
+    ACTIVE_LOW => true       
+)
+port map(
+    clk     => clk,
+    sig_in  => btn0,
+    sig_out => btn0_debounced
+);
+```
+
+`btn0` passes through the debouncer before reaching the FSM — this is the right place to handle metastability and contact bounce.
 
 ---
 ⬅️  [MAIN PAGE](../README.md)
