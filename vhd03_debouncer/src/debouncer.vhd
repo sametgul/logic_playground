@@ -22,46 +22,51 @@ architecture Behavioral of debouncer is
     signal tim_en  : std_logic := '0';
     signal tim_tick: std_logic := '0';
     
-    constant TIM_LIM : integer := CLK_FREQ/(1000)*DEBTIME_MS;
+    constant TIM_LIM : integer := (CLK_FREQ / 1000) * DEBTIME_MS;
     signal   timer   : integer range 0 to TIM_LIM-1 := 0;
+
 begin
+
+    -- Combinational tick: asserted in the same cycle timer hits the limit
+    tim_tick <= '1' when (timer = TIM_LIM-1 and tim_en = '1') else '0';
 
     pMAIN: process(clk) begin
         if rising_edge(clk) then
+
             case state is 
+
                 when sINIT =>
                     if ACTIVE_LOW = true then
-                            state   <= sONE;
-                            sig_out <= '1';
+                        state       <= sONE;
+                        sig_out <= '1';
                     else
-                            state   <= sZERO;
-                            sig_out <= '0';
+                        state       <= sZERO;
+                        sig_out <= '0';
                     end if;
                     
                 when sONE =>
                     sig_out <= '1';
-                    
-                    if(sig_in = '0') then
+                    if (sig_in = '0') then
                         state  <= sONEtoZERO;
                         tim_en <= '1';
                     end if;
                     
                 when sONEtoZERO =>
                     sig_out <= '1';
-                    
-                    if(sig_in = '1') then
-                        state   <= sONE;
-                        tim_en  <= '0';
-                    elsif(tim_tick = '1') then
-                        state   <= sZERO;
-                        tim_en  <= '0';
+
+                    if (sig_in = '1') then
+                        state  <= sONE;
+                        tim_en <= '0';
+                    elsif (tim_tick = '1') then
+                        state       <= sZERO;
+                        tim_en      <= '0';
+                        sig_out <= '0';
                     end if;
                     
-                
-                when sZERO      =>
+                when sZERO =>
                     sig_out <= '0';
-                    
-                    if(sig_in = '1') then
+
+                    if (sig_in = '1') then
                         state  <= sZEROtoONE;
                         tim_en <= '1';
                     end if;
@@ -69,30 +74,29 @@ begin
                 when sZEROtoONE =>
                     sig_out <= '0';
                     
-                    if(sig_in = '0') then
-                        state   <= sZERO;
-                        tim_en  <= '0';
-                    elsif(tim_tick = '1') then
-                        state   <= sONE;
-                        tim_en  <= '0';
+                    if (sig_in = '0') then
+                        state  <= sZERO;
+                        tim_en <= '0';
+                    elsif (tim_tick = '1') then
+                        state       <= sONE;
+                        tim_en      <= '0';
+                        sig_out <= '1';
                     end if;
+
             end case;  
         end if;
     end process;
     
     pTIMER: process(clk) begin
         if rising_edge(clk) then
-            if(tim_en = '1') then
-                if(timer = TIM_LIM-1) then
-                    timer    <= 0;
-                    tim_tick <= '1';      
+            if (tim_en = '1') then
+                if (timer = TIM_LIM-1) then
+                    timer <= 0;
                 else
-                    timer    <= timer + 1;
-                    tim_tick <= '0';
+                    timer <= timer + 1;
                 end if;                
             else
-                timer    <= 0;
-                tim_tick <= '0';
+                timer <= 0;
             end if;
         end if;
     end process;
