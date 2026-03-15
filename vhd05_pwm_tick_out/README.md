@@ -87,11 +87,15 @@ end if;
 
 Since both `duty_latched` and `pwm_out` are updated in the same registered process, there is no timing mismatch between them.
 
+## Simulation Result
+
+![simulation](docs/tb.png)
+
 ## Hardware Validation
 
 I connected a VIO to drive `duty_cycle` and verified the output with an **Analog Discovery 3**. The waveform below shows the PWM output at a set duty cycle — frequency and high time matched the expected values.
 
-![pwm_scope](image.png)
+![pwm_scope](docs/ad3.png)
 
 ---
 ⬅️  [MAIN PAGE](../README.md)

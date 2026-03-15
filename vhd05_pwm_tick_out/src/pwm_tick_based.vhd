@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
-entity pwm_gen is
+entity pwm_tick_based is
 generic(
     CLK_FREQ : integer := 40_000_000; -- Hz
     PWM_FREQ : integer := 200_000;    -- Hz
@@ -15,9 +15,9 @@ port(
     duty_cycle : in  std_logic_vector(N-1 downto 0); -- 0 = 0%, PWM_PERIOD = 100%
     pwm_out    : out std_logic
 );
-end pwm_gen;
+end pwm_tick_based;
 
-architecture Behavioral of pwm_gen is
+architecture Behavioral of pwm_tick_based is
 
     constant PWM_PERIOD : integer := CLK_FREQ / PWM_FREQ;
 
