@@ -83,7 +83,7 @@ begin
     if rising_edge(clk) then
       if timer = TIM_LIM-1 then
         timer     <= 0;
-        -- Lock the hight at the beginning of the new period
+        -- Lock the height at the beginning of the new period
         high_time <= high_time_calc;
       else
         timer <= timer + 1;

@@ -13,9 +13,9 @@ A structured personal reference for FPGA development — covering RTL fundamenta
 | 2 | [N-Bit Adder with VIO (Cmod A7)](vhd02_adder_vio/README.md) |
 | 3 | [Debouncer (FSM)](vhd03_debouncer/README.md) |
 | 4 | [Button-Selectable Timer & LED Counter](vhd04_tim_cnt/README.md) |
-| 5 | [PWM Output Generation](vhd05_pwm_tick_out/README.md) |
-| 6 | [Percentage-based PWM Output](p05_pwm_out/README.md) |
-| 7 | [UART Transmitter](p07_uart_tx/README.md) |
+| 5 | [Tick-Based PWM Output Module](vhd05_pwm_tick_out/README.md) |
+| 6 | [Percentage-based PWM Output](vhd06_pwm_percent/README.md) |
+| 7 | [UART Transmitter](vhd07_uart_tx/README.md) |
 | 8 | [UART Receiver](p08_uart_rx/README.md) |
 | 9 | [BRAM Usage — Single-Port Block RAM](p09_block_ram/README.md) |
 | 17 | [Edge Detection & D Flip-Flop Notes](p17_clock_and_edgedetect/README.md) |
