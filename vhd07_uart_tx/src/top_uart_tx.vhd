@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
-entity top is
+entity top_uart_tx is
 generic(
     CLK_FREQ  : integer := 12_000_000;
     BAUD_RATE : integer := 115_200;
@@ -13,17 +13,18 @@ port(
     led             : out std_logic;
     uart_rxd_out    : out std_logic
 );
-end top;
+end top_uart_tx;
 
-architecture Behavioral of top is
+architecture Behavioral of top_uart_tx is
     signal timer : integer range 0 to CLK_FREQ-1 := 0;
     signal st    : std_logic := '0';
     signal cnt   : unsigned(7 downto 0) := (others => '0');
 begin
     process(sysclk) begin
     if rising_edge(sysclk) then
+        -- st is a 1-cycle pulse: uart_tx latches data_in on the same rising edge
         if(timer = CLK_FREQ-1) then
-            st <= '1';
+            st <= '1';  -- 1-cycle pulse, sampled by uart_tx on next rising edge
             timer <= 0;
             cnt <= cnt + 1;
         else

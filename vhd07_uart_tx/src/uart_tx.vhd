@@ -20,8 +20,8 @@ architecture Behavioral of uart_tx is
     type t_state is (s_IDLE, s_START, s_DATA, s_END);
     signal state : t_state := s_IDLE;
     
-    constant TIMER_LIM : integer := CLK_FREQ / BAUD_RATE;       -- CLK NEEDED FOR ONE BAUD PERIOD
-    constant STOP_LIM  : integer := (CLK_FREQ / BAUD_RATE)*STOP_BIT;       -- CLK NEEDED FOR ONE BAUD PERIOD
+    constant TIMER_LIM : integer := CLK_FREQ / BAUD_RATE;                  -- CLK NEEDED FOR ONE BAUD PERIOD
+    constant STOP_LIM  : integer := (CLK_FREQ / BAUD_RATE)*STOP_BIT;       -- CLK NEEDED FOR STOP BITS
     signal   timer     : integer range 0 to TIMER_LIM-1 := 0;
     signal   stop_timer: integer range 0 to STOP_LIM-1  := 0;
         
@@ -47,7 +47,8 @@ begin
             
                 if (timer = TIMER_LIM-1) then
                     timer   <= 0;  
-                                    
+
+                    --Prepare for the first data bit to be sent in the next state
                     tx_out  <= shreg(0);
                     shreg   <= '0' & shreg(7 downto 1);
                     state   <= s_DATA;        
@@ -65,6 +66,7 @@ begin
                             shreg   <= '0' & shreg(7 downto 1);
                             bit_cnt <= bit_cnt + 1;    
                         else
+                            --Prepare the outputs for the stop bit to be sent in the next state
                             bit_cnt <= 0;
                             tx_out  <= '1';    --stop bit
                             tx_done <= '1';

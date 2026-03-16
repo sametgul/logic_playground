@@ -18,7 +18,6 @@ A structured personal reference for FPGA development — covering RTL fundamenta
 | 7 | [UART Transmitter](vhd07_uart_tx/README.md) |
 | 8 | [UART Receiver](p08_uart_rx/README.md) |
 | 9 | [BRAM Usage — Single-Port Block RAM](p09_block_ram/README.md) |
-| 17 | [Edge Detection & D Flip-Flop Notes](p17_clock_and_edgedetect/README.md) |
 
 ## IP Cores
 
