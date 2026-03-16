@@ -1,15 +1,13 @@
 # UART Receiver (VHDL)
 
-A compact, synthesizable **UART RX** for FPGA boards (verified on **CMOD A7**). It targets the classic **8-N-1/2** framing (8 data bits, no parity, one or two stop bits from the transmitter). Line idles high; data is LSB-first.
+A compact, synthesizable **UART RX** for FPGA boards. It targets the classic **8-N-1/2** framing (8 data bits, no parity, one or two stop bits from the transmitter). Line idles high; data is LSB-first.
 
 ---
 
 ## Features
 
-* Parametric clock and baud via `CLK_FREQ`, `BAUD_RATE`.
 * **Mid-bit sampling** without oversampling: start bit is re-checked at **T/2**, data bits sampled every **T**.
 * One-byte output with a **read strobe** `read_done` asserted for one bit period at the end of a valid frame.
-* Clean 4-state FSM.
 
 ---
 
@@ -44,11 +42,6 @@ $$
 * **DATA** – sample every **T**, shift LSB-first into the byte; after 8 bits, go to STOP.
 * **STOP** – sample once more after **T**; if high, assert `read_done='1'` for one bit time and return to IDLE.
 
-Notes:
-
-* Works with 1 **or more** stop bits from the peer.
-* No parity; add a PARITY state if you need it.
-
 ---
 
 ## I/O
@@ -78,17 +71,13 @@ The demo assigns the **last two bits** of `data_out` to the two on-board LEDs an
 * `uart_rx.vhd` — receiver RTL
 * `top.vhd` — CMOD A7 demo wrapper
 * `tb_uart_rx.vhd` — simulation testbench
-* `docs/uart_timing.png` — frame with sampling instants (red lines)
-* `docs/fsm_rx.png` — RX FSM
-* `docs/tb.png` — expected waveform
-
 ---
 
 ## Integration tips
 
 * Keep `CLK_FREQ/BAUD_RATE` close to an integer; standard UARTs tolerate a few percent mismatch.
 * Back-to-back frames at full baud are supported; the core returns to `IDLE` immediately after `read_done` de-asserts.
-* For noisy lines, extend to 3×/8×/16× oversampling and majority voting; this RX is the lean, single-sample version.
+* For noisy lines, improved version can be implemented, which is extends to 3×/8×/16× oversampling and majority voting; this RX is the lean, single-sample version.
 
 ---
 
