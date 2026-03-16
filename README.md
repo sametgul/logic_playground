@@ -16,7 +16,7 @@ A structured personal reference for FPGA development — covering RTL fundamenta
 | 5 | [Tick-Based PWM Output Module](vhd05_pwm_tick_out/README.md) |
 | 6 | [Percentage-based PWM Output](vhd06_pwm_percent/README.md) |
 | 7 | [UART Transmitter](vhd07_uart_tx/README.md) |
-| 8 | [UART Receiver](p08_uart_rx/README.md) |
+| 8 | [UART Receiver](vhd08_uart_rx/README.md) |
 | 9 | [BRAM Usage — Single-Port Block RAM](p09_block_ram/README.md) |
 
 ## IP Cores
