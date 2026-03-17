@@ -11,6 +11,7 @@ It supports **READ_FIRST** and **WRITE_FIRST** modes and configurable read laten
 |------|-------------|
 | `src/spbram.vhd` | Single-port BRAM RTL — parametric read mode and latency |
 | `src/tb_spbram.vhd` | Testbench — exercises all four mode/latency combinations |
+| `src/uart_bram.vhd` | Top level — receive 3 bytes over UART, store in BRAM, echo back in reverse |
 
 ---
 
@@ -123,6 +124,44 @@ u_bram : entity work.spbram
     dout_o => dout
   );
 ```
+
+---
+
+## Top Level — UART + BRAM Echo (`uart_bram.vhd`)
+
+This top level ties together the UART RX, UART TX, and BRAM cores into a complete system. It demonstrates the key challenge of working with registered BRAM outputs — specifically that **you must wait one cycle after changing the address before reading `dout_o`**.
+
+**Behavior:**
+
+1. Receive 3 bytes over UART and store them into BRAM at addresses 0, 1, 2
+2. Read them back in **reverse order** (addr 2 → 1 → 0) and echo over UART TX
+3. Return to idle, ready for the next 3-byte sequence
+
+```
+Receive:  AA → addr 0 | BB → addr 1 | CC → addr 2
+Echo TX:  CC           BB             AA
+```
+
+LED behavior:
+
+- `"00"` — power-up
+- `"01"` — receiving in progress
+- `"10"` — echo complete, returned to idle
+
+**The BRAM read timing problem and how it is solved**
+
+After changing `addr_i`, `dout_o` is not valid until the next rising edge (`LAT="1_CLK"`). Reading `dout_o` in the same cycle as the address change captures stale data — this was the root cause of getting `BB BB AA` instead of `CC BB AA`.
+
+The solution is a split state pattern for each read:
+
+```
+xSETADDR: change addr_i → transition to xREAD
+xREAD:    dout_o is now valid → capture into datain, assert start_tx
+```
+
+For STATE5 and STATE6, the `xSETADDR` state also doubles as the `tx_done` wait — two jobs in one state, keeping the FSM compact.
+
+> **Rule of thumb:** always insert at least one cycle between changing a synchronous RAM address and reading the output. The same principle applies to any pipelined memory interface.
 
 ---
 
