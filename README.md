@@ -18,6 +18,7 @@ A structured personal reference for FPGA development — covering RTL fundamenta
 | 7 | [UART Transmitter](vhd07_uart_tx/README.md) |
 | 8 | [UART Receiver](vhd08_uart_rx/README.md) |
 | 9 | [BRAM Usage — Single-Port Block RAM](vhd09_block_ram/README.md) |
+| 10 | [SPI MASTER](vhd10_spi_master/README.md) |
 
 
 

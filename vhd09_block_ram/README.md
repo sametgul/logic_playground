@@ -125,6 +125,24 @@ u_bram : entity work.spbram
     dout_o => dout
   );
 ```
+---
+## Vivado Synthesis Notes
+
+With `read_type = "READ_FIRST"`, Vivado reports the BRAM property accordingly:
+
+![read_first property](docs/readfirst.png)
+
+With `LAT = "2_CLK"`, Vivado registers the output (`DOA_REG = 1`); with `"1_CLK"` it would be `DOA_REG = 0`:
+
+![2_clk latency](docs/2clk.png)
+
+---
+
+## Testbench
+
+The testbench exercises the four mode/latency combinations and verifies read-back timing. Results:
+
+![tb](docs/testbench.png)
 
 ---
 
@@ -163,26 +181,6 @@ xREAD:    dout_o is now valid → capture into datain, assert start_tx
 For STATE5 and STATE6, the `xSETADDR` state also doubles as the `tx_done` wait — two jobs in one state, keeping the FSM compact.
 
 > **Rule of thumb:** always insert at least one cycle between changing a synchronous RAM address and reading the output. The same principle applies to any pipelined memory interface.
-
----
-
-## Vivado Synthesis Notes
-
-With `read_type = "READ_FIRST"`, Vivado reports the BRAM property accordingly:
-
-![read_first property](docs/readfirst.png)
-
-With `LAT = "2_CLK"`, Vivado registers the output (`DOA_REG = 1`); with `"1_CLK"` it would be `DOA_REG = 0`:
-
-![2_clk latency](docs/2clk.png)
-
----
-
-## Testbench
-
-The testbench exercises the four mode/latency combinations and verifies read-back timing. Results:
-
-![tb](docs/testbench.png)
 
 ---
 
