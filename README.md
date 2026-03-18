@@ -15,9 +15,10 @@ A structured personal reference for FPGA development — covering RTL fundamenta
 | 4 | [Button-Selectable Timer & LED Counter](vhd04_tim_cnt/README.md) |
 | 5 | [Tick-Based PWM Output Module](vhd05_pwm_tick_out/README.md) |
 | 6 | [Percentage-based PWM Output](vhd06_pwm_percent/README.md) |
-| 7 | [BRAM Usage — Single-Port Block RAM](vhd07_block_ram/README.md) |
-| 8 | [UART Transmitter](vhd08_uart_tx/README.md) |
-| 9 | [UART Receiver](vhd09_uart_rx/README.md) |
+| 7 | [UART Transmitter](vhd07_uart_tx/README.md) |
+| 8 | [UART Receiver](vhd08_uart_rx/README.md) |
+| 9 | [BRAM Usage — Single-Port Block RAM](vhd09_block_ram/README.md) |
+
 
 
 ## IP Cores
