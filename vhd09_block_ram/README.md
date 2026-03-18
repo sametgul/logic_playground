@@ -11,7 +11,10 @@ It supports **READ_FIRST** and **WRITE_FIRST** modes and configurable read laten
 |------|-------------|
 | `src/spbram.vhd` | Single-port BRAM RTL — parametric read mode and latency |
 | `src/tb_spbram.vhd` | Testbench — exercises all four mode/latency combinations |
-| `src/uart_bram.vhd` | Top level — receive 3 bytes over UART, store in BRAM, echo back in reverse |
+| `src/uart_bram.vhd` | Top level 1 — receive 3 bytes over UART, store in BRAM, echo back in reverse |
+| `src/rainbow_rom.vhd` | Xilinx Block Memory Generator IP — 256×24-bit ROM initialized from `.coe` file |
+| `src/rgb_bram.vhd` | Top level 2 — rainbow color cycle driven from BRAM LUT |
+| `src/rainbow.coe` | BRAM initialization file — 256-entry HSV rainbow color table |
 
 ---
 
@@ -80,8 +83,6 @@ The consequence is that on write cycles the effective latency drops to 0, while 
 dout_o <= din_i;   -- <-- delete this
 ```
 
-After removing it, WRITE_FIRST behavior is no longer guaranteed during the pipeline drain cycles — the new data will appear 2 cycles late on write cycles. Whether this matters depends on your design.
-
 ---
 
 ## Inference & Device Notes
@@ -127,7 +128,7 @@ u_bram : entity work.spbram
 
 ---
 
-## Top Level — UART + BRAM Echo (`uart_bram.vhd`)
+## Top Level 1 — UART + BRAM Echo (`uart_bram.vhd`)
 
 This top level ties together the UART RX, UART TX, and BRAM cores into a complete system. It demonstrates the key challenge of working with registered BRAM outputs — specifically that **you must wait one cycle after changing the address before reading `dout_o`**.
 
@@ -185,9 +186,63 @@ The testbench exercises the four mode/latency combinations and verifies read-bac
 
 ---
 
+## Top Level 2 — Rainbow Color Cycle (`rgb_bram.vhd`)
+
+This project uses the **Xilinx Block Memory Generator IP** instead of the inferred BRAM from `spbram.vhd`. The key difference is initialization — the IP loads a `.coe` file at synthesis time, making the BRAM contents read-only and pre-programmed without any runtime writes.
+
+![ip1](docs/ip1.png)
+![ip2](docs/ip2.png)
+![ip3](docs/ip3.png)
+![ip4](docs/ip4.png)
+
+**Architecture:**
+
+```
+rainbow_rom (256×24-bit, .coe initialized)
+    ↓ douta[23:16] = R
+    ↓ douta[15:8]  = G  →  rgb_controller  →  PWM  →  RGB LED
+    ↓ douta[7:0]   = B
+    ↑
+8-bit address counter (steps every 20 ms)
+```
+
+**Behavior:** a free-running counter steps through all 256 BRAM addresses, holding each for 20 ms. The full rainbow cycle completes in `256 × 20 ms = 5.12 seconds` and loops seamlessly.
+
+**The `.coe` file** (`src/rainbow.coe`) contains 256 entries of 24-bit hex RGB values representing a full HSV rainbow cycle from red → yellow → green → cyan → blue → magenta → red. Each entry corresponds to one color step held for 20 ms on hardware.
+
+```
+memory_initialization_radix=16;
+memory_initialization_vector=
+FF0000,   -- hue=0°   pure red
+FF0500,
+...
+00FFFF,   -- hue=180° cyan
+...
+FF0005;   -- hue=359° back to red
+```
+
+To use a different color sequence, replace `rainbow.coe` with your own file following the same format and re-generate the IP in Vivado.
+
+**Block Memory Generator IP settings:**
+
+| Setting | Value |
+|---------|-------|
+| Memory Type | Single Port ROM |
+| Port A Width | 24 |
+| Port A Depth | 256 |
+| Output Registers | None (1-cycle latency) |
+| Load Init File | `rainbow.coe` |
+
+**Note on BRAM latency:** `ram_addr` changes on the timer tick and `ram_dout` is valid one cycle later. At 20 ms per step this 1-cycle glitch is completely invisible — no wait states needed here unlike `uart_bram`.
+
+---
+
 ## References
 
 1. [VHDL ile FPGA PROGRAMLAMA](https://www.udemy.com/course/vhdl-ile-fpga-programlama-temel-seviye/)
+2. [What is a Block RAM in an FPGA?](https://www.youtube.com/watch?v=fqUuvwl4QJA)
+3. [Dual-Frequency Sine Wave Generators in Vivado Simulation by Xilinx Block Memory Generator](https://www.youtube.com/watch?v=D8ZnMH-Wv9Y)
+4. [BRAM vivado tutorial ECE3610](https://www.youtube.com/watch?v=HPRrzgVfXo8)
 
 ---
 ⬅️  [MAIN PAGE](../README.md)
