@@ -22,10 +22,10 @@ use IEEE.NUMERIC_STD.all;
 --   - Shifts out on falling SCK edge (updates before master samples on rising)
 --------------------------------------------------------------------------------
 
-entity tb_spi_master is
-end tb_spi_master;
+entity tb_spi_mode0 is
+end tb_spi_mode0;
 
-architecture Behavioral of tb_spi_master is
+architecture Behavioral of tb_spi_mode0 is
 
   constant CLK_FREQ  : integer := 100_000_000;
   constant SCLK_FREQ : integer := 10_000_000;
@@ -128,7 +128,7 @@ begin
   end process;
 
   -- DUT
-  inst_DUT : entity work.spi_master
+  inst_DUT : entity work.spi_mode0
     generic map(
       CLK_FREQ  => CLK_FREQ,
       SCLK_FREQ => SCLK_FREQ,
