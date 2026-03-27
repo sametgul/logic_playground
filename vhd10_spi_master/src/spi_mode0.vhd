@@ -13,8 +13,8 @@ use IEEE.STD_LOGIC_1164.all;
 -- Edge detection strategy:
 --   Instead of comparing registered SCK values (which adds 1-2 cycles of
 --   latency), edges are detected directly from the timer:
---     timer = HALF_PER-1 AND sclk_r = '0' → rising edge is about to occur
---     timer = HALF_PER-1 AND sclk_r = '1' → falling edge is about to occur
+--     timer = HALF_PER-1 AND sclk_r = '0' → rising edge is about to occur, next cycle sclk_r will be '1'
+--     timer = HALF_PER-1 AND sclk_r = '1' → falling edge is about to occur, next cycle sclk_r will be '0'
 --   Acting on these conditions in the same cycle as the SCK toggle gives
 --   minimum latency — MISO is sampled and MOSI updated exactly on the edge.
 --
@@ -22,7 +22,7 @@ use IEEE.STD_LOGIC_1164.all;
 -- is always deterministic regardless of when start is asserted.
 --------------------------------------------------------------------------------
 
-entity spi_master is
+entity spi_mode0 is
   generic (
     CLK_FREQ  : integer := 12_000_000; -- Hz
     SCLK_FREQ : integer := 1_000_000;  -- Hz
@@ -40,9 +40,9 @@ entity spi_master is
     miso     : in  std_logic;
     cs_n     : out std_logic
   );
-end spi_master;
+end spi_mode0;
 
-architecture Behavioral of spi_master is
+architecture Behavioral of spi_mode0 is
 
   constant HALF_PER : integer := CLK_FREQ / (SCLK_FREQ * 2);
 
@@ -106,9 +106,8 @@ begin
               -- Update MOSI for the next bit
               if bit_cnt = DATA_W - 1 then
                 -- Last falling edge — stop SCK and finish
-                sclk_r <= '0';
-                state  <= DONE_ST;
-                bit_cnt <= 0;
+                -- (sclk_r is already '0' from the not sclk_r above)
+                state <= DONE_ST;
               else
                 tx_shreg <= tx_shreg(DATA_W-2 downto 0) & '0';
                 mosi     <= tx_shreg(DATA_W-1);
