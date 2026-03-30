@@ -20,7 +20,8 @@ A structured personal reference for FPGA development — covering RTL fundamenta
 | 7 | [UART Transmitter](vhd07_uart_tx/README.md) | Bit-timing via counter FSM, shift register TX |
 | 8 | [UART Receiver](vhd08_uart_rx/README.md) | Mid-bit sampling (T/2 start, then every T), frame validation |
 | 9 | [BRAM Usage — Single-Port Block RAM](vhd09_block_ram/README.md) | BRAM inference, READ/WRITE_FIRST modes, pipeline latency |
-| 10 | [SPI Master — Mode 0](vhd10_spi_master/README.md) | Timer-based edge detection, deterministic SCK phase |
+| 10 | [SPI Master — Mode 0](vhd10_spi_mode0/README.md) | Timer-based edge detection, deterministic SCK phase |
+| 11 | [SPI Master — All Modes](vhd11_spi_all_modes/README.md) | CPOL/CPHA generics, all 4 SPI modes from one RTL source |
 
 ---
 

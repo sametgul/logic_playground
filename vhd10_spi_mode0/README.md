@@ -15,7 +15,7 @@ A synthesizable, full-duplex **SPI Master** for FPGA boards. Implements **Mode 0
 
 ## Features
 
-* **Timer-based edge detection** — SCK edges are predicted from the timer, not from a registered SCK comparison, eliminating 1–2 cycles of latency
+* **Timer-based edge detection** — SCK edges are decided from the timer, not from a registered SCK comparison, eliminating 1–2 cycles of latency
 * **Deterministic SCK phase** — timer resets on every transaction start so the first SCK edge is always exactly `HALF_PER` cycles after CS_n asserts, regardless of when `start` is pulsed
 * **MOSI pre-loaded** before the first rising SCK edge — data is stable well before the slave samples it
 * **Full-duplex** — TX and RX shift registers operate simultaneously within the same state
@@ -28,10 +28,11 @@ A synthesizable, full-duplex **SPI Master** for FPGA boards. Implements **Mode 0
 ```
 SCK     ______|‾‾‾‾‾‾|______|‾‾‾‾‾‾|______ ... ______|‾‾‾‾‾‾|______
 CS_n  ‾‾‾|___________________________________________________|‾‾‾‾‾
-MOSI  ---< MSB >< b6  >< b5  > ...                     < LSB >-----
-MISO  ----< MSB >< b6  >< b5  > ...                    < LSB >-----
-            ↑            ↑ sample (rising edge)
-                  ↓ update (falling edge)
+MOSI  ---< MSB >< b6  >< b5  > ...                    < LSB >-----
+                     ↓ update (falling edge)
+MISO  ---< MSB >< b6  >< b5  > ...                    < LSB >-----
+                            ↑ sample (rising edge)
+                  
 ```
 
 * **SCK idle:** low (`'0'`)
@@ -121,9 +122,8 @@ Results are checked with `assert` statements — a severity-error report fires o
 
 ## References
 
-1. [Mehmet Burak Aykenar – GitHub](https://github.com/mbaykenar/apis_anatolia)
-2. [Understanding SPI](https://www.youtube.com/watch?v=0nVNwozXsIc)
-3. [SPI Project in FPGA - Ambient Light Sensor](https://www.youtube.com/playlist?list=PLnAoag7Ew-vq5kOyfyNN50xL718AtLoCQ)
+1. [Understanding SPI](https://www.youtube.com/watch?v=0nVNwozXsIc)
+2. [Serial Peripheral Interface -- Wikipedia](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface)
 
 ---
-⬅️  [MAIN PAGE](../README.md)
+⬅️  [MAIN PAGE](../README.md)  |  ➡️  [vhd11 — SPI All Modes](../vhd11_spi_all_modes/README.md)
