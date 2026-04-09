@@ -1,4 +1,4 @@
-# SPI Master - All Modes (VHDL)
+# SPI Master -- All Modes (VHDL)
 
 A synthesizable, full-duplex **SPI Master** supporting all four SPI modes via `CPOL` and `CPHA` generics.
 Extends [vhd10](../vhd10_spi_mode0/README.md) (Mode 0 only) to cover the complete Motorola SPI standard.
