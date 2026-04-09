@@ -22,6 +22,14 @@ A structured personal reference for FPGA development — covering RTL fundamenta
 | 9 | [BRAM Usage — Single-Port Block RAM](vhd09_block_ram/README.md) | BRAM inference, READ/WRITE_FIRST modes, pipeline latency |
 | 10 | [SPI Master — Mode 0](vhd10_spi_mode0/README.md) | Timer-based edge detection, deterministic SCK phase |
 | 11 | [SPI Master — All Modes](vhd11_spi_all_modes/README.md) | CPOL/CPHA generics, all 4 SPI modes from one RTL source |
+| 12 | [SPI Master — With CS/Idle Timing](vhd12_universal_spi/README.md) | Parameterized t4/t8 hold times, dead-time enforcement between frames |
+
+---
+
+## Mini Projects
+
+| # | Project | Key Concept |
+|---|---------|-------------|
 
 ---
 
@@ -37,7 +45,17 @@ A structured personal reference for FPGA development — covering RTL fundamenta
 
 | # | Project | Key Concept |
 |---|---------|-------------|
-| 0 | [PMODDA4 Driver — DAC AD5628](d01_pmodda4_driver/README.md) | SPI frame construction, analog slew rate constraints |
+| 0 | [PmodDA4 Driver — Digilent reference adaptation](d00_pmodda4_driver/README.md) | SPI frame construction, analog slew rate constraints |
+| 1 | [PmodDA4 Driver — AD5628 with Universal SPI Master](d01_pmodda4/README.md) | From-scratch FSM over generic SPI IP, INIT_REF sequencing, CS/idle timing constraints |
+
+---
+
+## MicroBlaze (Soft Processor)
+
+| # | Project | Key Concept |
+|---|---------|-------------|
+| 0 | [MicroBlaze General Notes](uB00_uBlaze_notes/README.md) | Core presets, max frequencies, multi-core TMR pattern |
+| 1 | [MicroBlaze GPIO](uB01_uBlaze_gpio/README.md) | Vivado block design flow, XSA export, Vitis platform + app project setup |
 
 ---
 

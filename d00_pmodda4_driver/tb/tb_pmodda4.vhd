@@ -21,8 +21,6 @@ architecture Behavioral of tb_pmodda4 is
     signal SCLK      :  STD_LOGIC;                     
     signal wrt_done  :  STD_LOGIC;  
     
-    signal data_out  : std_logic_vector(11 downto 0);                   
-
 begin
 
     pSTIMULI: process begin

@@ -1,14 +1,3 @@
-----------------------------------------------------------------------------------
--- Engineer:    Samet GUL
--- Email:       asam.gul@gmail.com
--- Github:      https://github.com/sametgul
--- LinkedIn:    www.linkedin.com/in/gul-samet
---
--- Create Date: 06.04.2026
--- Description: Universal SPI Master — All 4 Modes (CPOL/CPHA configurable)
---              with configurable CS setup and idle timing
-----------------------------------------------------------------------------------
-
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 
@@ -42,25 +31,23 @@ use IEEE.STD_LOGIC_1164.all;
 
 entity spi_all_modes is
   generic (
-    CLK_FREQ       : integer   := 100_000_000; -- system clock frequency (Hz)
-    SCLK_FREQ      : integer   := 50_000_000; -- desired SCK frequency   (Hz)
-    DATA_W         : integer   := 32; -- transaction width in bits
-    CPOL           : std_logic := '1'; -- '0' = SCK idles low,  '1' = idles high
-    CPHA           : std_logic := '0'; -- '0' = sample-first,   '1' = shift-first
-    CS_SETUP_TICKS : integer   := 1; -- sys-clk cycles from CS assert to first SCK edge (t_CSS)
-    CS_IDLE_TICKS  : integer   := 1 -- sys-clk cycles CS must stay high between frames (t8)
+    CLK_FREQ  : integer   := 12_000_000; -- system clock frequency (Hz)
+    SCLK_FREQ : integer   :=  1_000_000; -- desired SCK frequency   (Hz)
+    DATA_W    : integer   := 8;          -- transaction width in bits
+    CPOL      : std_logic := '0';        -- '0' = SCK idles low,  '1' = idles high
+    CPHA      : std_logic := '0'         -- '0' = sample-first,   '1' = shift-first
   );
   port (
-    clk      : in std_logic;
-    start    : in std_logic; -- 1-cycle pulse: begin transaction
-    busy     : out std_logic; -- high while transaction in progress
-    done     : out std_logic; -- 1-cycle pulse: transaction complete
-    mosi_dat : in std_logic_vector(DATA_W - 1 downto 0); -- data to transmit (MSB first)
+    clk      : in  std_logic;
+    start    : in  std_logic;                             -- 1-cycle pulse: begin transaction
+    busy     : out std_logic;                             -- high while transaction in progress
+    done     : out std_logic;                             -- 1-cycle pulse: transaction complete
+    mosi_dat : in  std_logic_vector(DATA_W - 1 downto 0); -- data to transmit (MSB first)
     miso_dat : out std_logic_vector(DATA_W - 1 downto 0); -- data received    (MSB first)
     sclk     : out std_logic;
     mosi     : out std_logic;
-    miso     : in std_logic;
-    cs_n     : out std_logic -- chip select, active-low
+    miso     : in  std_logic;
+    cs_n     : out std_logic                              -- chip select, active-low
   );
 end spi_all_modes;
 
@@ -69,11 +56,11 @@ architecture Behavioral of spi_all_modes is
   -- Number of system-clock cycles per SCK half-period
   constant HALF_PER : integer := CLK_FREQ / (SCLK_FREQ * 2);
 
-  type t_state is (IDLE, CS_SETUP, TRANSFER, DONE_ST, CS_IDLE);
+  type t_state is (IDLE, TRANSFER, DONE_ST);
   signal state : t_state := IDLE;
 
-  signal timer  : integer range 0 to HALF_PER + CS_SETUP_TICKS + CS_IDLE_TICKS := 0;
-  signal sclk_r : std_logic                                                    := CPOL;
+  signal timer  : integer range 0 to HALF_PER - 1 := 0;
+  signal sclk_r : std_logic                       := CPOL;
 
   signal tx_shreg : std_logic_vector(DATA_W - 1 downto 0) := (others => '0');
   signal rx_shreg : std_logic_vector(DATA_W - 1 downto 0) := (others => '0');
@@ -82,8 +69,7 @@ architecture Behavioral of spi_all_modes is
 begin
 
   -- SCK only toggles during TRANSFER; idles at CPOL at all other times
-  sclk <= sclk_r when state = TRANSFER else
-    CPOL;
+  sclk <= sclk_r when state = TRANSFER else CPOL;
 
   p_MAIN : process (clk)
   begin
@@ -93,7 +79,7 @@ begin
 
       case state is
 
-          -- ── IDLE ────────────────────────────────────────────────────────────
+        -- ── IDLE ────────────────────────────────────────────────────────────
         when IDLE =>
           busy    <= '0';
           cs_n    <= '1';
@@ -114,21 +100,11 @@ begin
               -- CPHA=1: first bit is driven ON the first SCK edge, not before
               tx_shreg <= mosi_dat; -- FIX: load full word for CPHA=1
             end if;
-            if (CS_SETUP_TICKS = 0) then
-              state <= TRANSFER;
-            else
-              state <= CS_SETUP;
-            end if;
+
+            state <= TRANSFER;
           end if;
 
-        when CS_SETUP =>
-          if (timer = CS_SETUP_TICKS) then
-            state <= TRANSFER;
-            timer <= 0;
-          else
-            timer <= timer + 1;
-          end if;
-          -- ── TRANSFER ────────────────────────────────────────────────────────
+        -- ── TRANSFER ────────────────────────────────────────────────────────
         when TRANSFER =>
           busy <= '1';
 
@@ -175,28 +151,15 @@ begin
             timer <= timer + 1;
           end if;
 
-          -- ── DONE ────────────────────────────────────────────────────────────
+        -- ── DONE ────────────────────────────────────────────────────────────
         when DONE_ST =>
           miso_dat <= rx_shreg;
           done     <= '1';
           busy     <= '0';
           cs_n     <= '1';
           mosi     <= '0';
+          state    <= IDLE;
 
-          if (CS_IDLE_TICKS = 0) then
-            state <= IDLE;
-          else
-            state <= CS_IDLE;
-            timer <= 0;
-          end if;
-
-        when CS_IDLE =>
-          if (timer = CS_IDLE_TICKS) then
-            state <= IDLE;
-            timer <= 0;
-          else
-            timer <= timer + 1;
-          end if;
       end case;
     end if;
   end process;
