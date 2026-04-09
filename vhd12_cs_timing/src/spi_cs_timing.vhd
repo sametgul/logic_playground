@@ -40,7 +40,7 @@ use IEEE.STD_LOGIC_1164.all;
 -- so SCK phase is always deterministic regardless of when start fires.
 --------------------------------------------------------------------------------
 
-entity spi_all_modes is
+entity spi_cs_timing is
   generic (
     CLK_FREQ       : integer   := 100_000_000; -- system clock frequency (Hz)
     SCLK_FREQ      : integer   := 50_000_000; -- desired SCK frequency   (Hz)
@@ -62,9 +62,9 @@ entity spi_all_modes is
     miso     : in std_logic;
     cs_n     : out std_logic -- chip select, active-low
   );
-end spi_all_modes;
+end spi_cs_timing;
 
-architecture Behavioral of spi_all_modes is
+architecture Behavioral of spi_cs_timing is
 
   -- Number of system-clock cycles per SCK half-period
   constant HALF_PER : integer := CLK_FREQ / (SCLK_FREQ * 2);
@@ -122,7 +122,7 @@ begin
           end if;
 
         when CS_SETUP =>
-          if (timer = CS_SETUP_TICKS) then
+          if (timer = CS_SETUP_TICKS - 1) then
             state <= TRANSFER;
             timer <= 0;
           else
@@ -191,7 +191,7 @@ begin
           end if;
 
         when CS_IDLE =>
-          if (timer = CS_IDLE_TICKS) then
+          if (timer = CS_IDLE_TICKS - 1) then
             state <= IDLE;
             timer <= 0;
           else
