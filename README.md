@@ -61,8 +61,8 @@ A structured personal reference for FPGA development — covering RTL fundamenta
 
 | # | Topic | Key Concept |
 |---|-------|-------------|
-| — | [Vivado Troubleshooting Log](viv00_troubleshoots/README.md) | Running log of Vivado issues and fixes |
-| 0 | [Programming FPGA with Quad SPI Flash](v00_programming_fpga/README.md) | Bitstream compression, QSPI flash programming workflow |
+| 0 | [Vivado Troubleshooting Log](viv00_troubleshoots/README.md) | Running log of Vivado issues and fixes |
+| 1 | [Programming FPGA with Quad SPI Flash](viv01_programming_fpga/README.md) | Bitstream compression, QSPI flash programming workflow |
 
 
 ---
