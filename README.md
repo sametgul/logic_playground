@@ -2,8 +2,6 @@
 
 A structured personal reference for FPGA development — covering RTL fundamentals, toolflow, and IP integration, built on Xilinx/Vivado with VHDL.
 
-**Board:** Digilent Cmod A7 (Artix-7, 12 MHz oscillator)
-
 ---
 
 ## VHDL / RTL Design
@@ -22,7 +20,7 @@ A structured personal reference for FPGA development — covering RTL fundamenta
 | 9 | [BRAM Usage — Single-Port Block RAM](vhd09_block_ram/README.md) | BRAM inference, READ/WRITE_FIRST modes, pipeline latency |
 | 10 | [SPI Master — Mode 0](vhd10_spi_mode0/README.md) | Timer-based edge detection, deterministic SCK phase |
 | 11 | [SPI Master — All Modes](vhd11_spi_all_modes/README.md) | CPOL/CPHA generics, all 4 SPI modes from one RTL source |
-| 12 | [SPI Master — With CS/Idle Timing](vhd12_universal_spi/README.md) | Parameterized t4/t8 hold times, dead-time enforcement between frames |
+| 12 | [SPI Master — With CS/Idle Timing](vhd12_cs_timing/README.md) | Parameterized CS and IDLE delay times, dead-time enforcement between frames |
 
 ---
 
@@ -63,7 +61,9 @@ A structured personal reference for FPGA development — covering RTL fundamenta
 
 | # | Topic | Key Concept |
 |---|-------|-------------|
+| — | [Vivado Troubleshooting Log](viv00_troubleshoots/README.md) | Running log of Vivado issues and fixes |
 | 0 | [Programming FPGA with Quad SPI Flash](v00_programming_fpga/README.md) | Bitstream compression, QSPI flash programming workflow |
+
 
 ---
 

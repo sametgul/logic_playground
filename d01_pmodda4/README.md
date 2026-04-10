@@ -1,8 +1,6 @@
 # PmodDA4 — AD5628 Driver with Universal SPI Master
 
-A from-scratch VHDL driver for the **Digilent PmodDA4** (AD5628 octal 12-bit DAC), written on top of a custom universal SPI master module [SPI Master](..\vhd11_spi_all_modes\README.md). Unlike the previous project [PMODDA4 Driver (DAC AD5628)](..\d00_pmodda4_driver\README.md) which adapted Digilent's official controller, this implementation is built entirely from the ground up to work with the generic SPI IP.
-
-**Target board:** Digilent Cmod A7 (Artix-7 XC7A35T)
+A from-scratch VHDL driver for the **Digilent PmodDA4** (AD5628 octal 12-bit DAC), written on top of a custom universal SPI master module [SPI Master](../vhd11_spi_all_modes/README.md). Unlike the previous project [PMODDA4 Driver (DAC AD5628)](../d00_pmodda4_driver/README.md) which adapted Digilent's official controller, this implementation is built entirely from the ground up to work with the generic SPI IP.
 
 ---
 
@@ -149,4 +147,4 @@ d01_pmodda4/
 ```
 
 ---
-⬅️  [MAIN PAGE](../README.md)  |  ⬅️  [PMODDA4 Driver (DAC AD5628)](..\d00_pmodda4_driver\README.md)
+⬅️  [MAIN PAGE](../README.md)  |  ⬅️  [PMODDA4 Driver (DAC AD5628)](../d00_pmodda4_driver/README.md)
