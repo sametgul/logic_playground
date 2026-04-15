@@ -25,8 +25,8 @@ use IEEE.STD_LOGIC_1164.all;
 --   Edges are inferred from the timer and the CURRENT value of sclk_r.
 --   Because sclk_r <= not sclk_r is a registered assignment, sclk_r still
 --   holds its OLD value in the same cycle the timer expires:
---     sclk_r = CPOL     → "first  edge": SCK is about to leave  idle
---     sclk_r = not CPOL → "second edge": SCK is about to return to idle
+--     sclk_r = CPOL     -> "first  edge": SCK is about to leave  idle
+--     sclk_r = not CPOL -> "second edge": SCK is about to return to idle
 --
 -- CPHA=0: sample MISO on first edge, shift MOSI on second edge.
 --   MSB is pre-loaded onto MOSI before CS_n asserts (one full HALF_PER
@@ -45,10 +45,10 @@ entity spi_cs_timing is
     CLK_FREQ       : integer   := 100_000_000; -- system clock frequency (Hz)
     SCLK_FREQ      : integer   := 50_000_000; -- desired SCK frequency   (Hz)
     DATA_W         : integer   := 32; -- transaction width in bits
-    CPOL           : std_logic := '1'; -- '0' = SCK idles low,  '1' = idles high
+    CPOL           : std_logic := '0'; -- '0' = SCK idles low,  '1' = idles high
     CPHA           : std_logic := '0'; -- '0' = sample-first,   '1' = shift-first
-    CS_SETUP_TICKS : integer   := 1; -- sys-clk cycles from CS assert to first SCK edge (t_CSS)
-    CS_IDLE_TICKS  : integer   := 1 -- sys-clk cycles CS must stay high between frames (t8)
+    CS_SETUP_TICKS : integer   := 0; -- sys-clk cycles from CS assert to first SCK edge (t_CSS)
+    CS_IDLE_TICKS  : integer   := 0 -- sys-clk cycles CS must stay high between frames (t8)
   );
   port (
     clk      : in std_logic;
@@ -93,7 +93,7 @@ begin
 
       case state is
 
-          -- ── IDLE ────────────────────────────────────────────────────────────
+          -- IDLE 
         when IDLE =>
           busy    <= '0';
           cs_n    <= '1';
@@ -128,7 +128,7 @@ begin
           else
             timer <= timer + 1;
           end if;
-          -- ── TRANSFER ────────────────────────────────────────────────────────
+          -- TRANSFER 
         when TRANSFER =>
           busy <= '1';
 
@@ -137,7 +137,7 @@ begin
             sclk_r <= not sclk_r; -- toggle SCK (registered; old value still readable below)
 
             if sclk_r = CPOL then
-              -- ── First edge: SCK leaving idle ──────────────────────────────
+              -- First edge: SCK leaving idle
               --   CPHA=0 → SAMPLE edge: capture MISO
               --   CPHA=1 → SHIFT  edge: drive next MOSI bit
 
@@ -149,7 +149,7 @@ begin
               end if;
 
             else
-              -- ── Second edge: SCK returning to idle ────────────────────────
+              -- Second edge: SCK returning to idle
               --   CPHA=0 → SHIFT  edge: drive next MOSI bit
               --   CPHA=1 → SAMPLE edge: capture MISO
 
@@ -161,6 +161,18 @@ begin
 
               if bit_cnt = DATA_W - 1 then
                 state <= DONE_ST; -- all bits transferred
+                busy  <= '0';
+                done  <= '1';
+                cs_n  <= '1';
+                mosi  <= '0';
+                -- CPHA=1: last MISO bit is being shifted into rx_shreg this same
+                -- clock cycle (registered), so read the value directly to avoid
+                -- capturing the stale rx_shreg (one bit short).
+                if CPHA = '1' then
+                  miso_dat <= rx_shreg(DATA_W - 2 downto 0) & miso;
+                else
+                  miso_dat <= rx_shreg;
+                end if;
               else
                 if CPHA = '0' then
                   mosi     <= tx_shreg(DATA_W - 1);
@@ -175,13 +187,10 @@ begin
             timer <= timer + 1;
           end if;
 
-          -- ── DONE ────────────────────────────────────────────────────────────
+          -- DONE
         when DONE_ST =>
-          miso_dat <= rx_shreg;
-          done     <= '1';
-          busy     <= '0';
-          cs_n     <= '1';
-          mosi     <= '0';
+
+          done <= '0'; -- redundant but it shows the intent
 
           if (CS_IDLE_TICKS = 0) then
             state <= IDLE;

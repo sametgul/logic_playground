@@ -28,6 +28,7 @@ A structured personal reference for FPGA development — covering RTL fundamenta
 
 | # | Project | Key Concept |
 |---|---------|-------------|
+| 0 | [Sawtooth Wave Generator via PmodDA4](p00_sawtooth_dac/README.md) | Clock Wizard IP (12→100 MHz), 50 MHz SPI, pipelined waveform generation |
 
 ---
 
@@ -64,6 +65,13 @@ A structured personal reference for FPGA development — covering RTL fundamenta
 | 0 | [Vivado Troubleshooting Log](viv00_troubleshoots/README.md) | Running log of Vivado issues and fixes |
 | 1 | [Programming FPGA with Quad SPI Flash](viv01_programming_fpga/README.md) | Bitstream compression, QSPI flash programming workflow |
 
+
+---
+
+## DSP
+
+| # | Project | Key Concept |
+|---|---------|-------------|
 
 ---
 
