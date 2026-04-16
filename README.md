@@ -16,21 +16,19 @@ A structured personal reference for FPGA development — covering RTL fundamenta
 
 ## VHDL / RTL Design
 
-> Numbers match folder suffixes (`vhd02` → row 2, `vhd12` → row 12). `vhd00` and `vhd01` are in **Guides & References** above.
-
 | # | Project | Key Concept |
 |---|---------|-------------|
-| 2 | [N-Bit Adder with VIO (Cmod A7)](vhd02_adder_vio/README.md) | `generate` loops for parametric design, VIO debugging |
-| 3 | [Debouncer (FSM)](vhd03_debouncer/README.md) | FSM + timer integration, metastability from external inputs |
-| 4 | [Button-Selectable Timer & LED Counter](vhd04_tim_cnt/README.md) | Module cascading, edge detection, clock-derived timing |
-| 5 | [Tick-Based PWM Output Module](vhd05_pwm_tick_out/README.md) | Double-buffered duty cycle for glitch-free updates |
-| 6 | [Percentage-based PWM Output](vhd06_pwm_percent/README.md) | Integer rounding (add-50/divide-100), period-boundary latching |
-| 7 | [UART Transmitter](vhd07_uart_tx/README.md) | Bit-timing via counter FSM, shift register TX |
-| 8 | [UART Receiver](vhd08_uart_rx/README.md) | Mid-bit sampling (T/2 start, then every T), frame validation |
-| 9 | [BRAM Usage — Single-Port Block RAM](vhd09_block_ram/README.md) | BRAM inference, READ/WRITE_FIRST modes, pipeline latency |
-| 10 | [SPI Master — Mode 0](vhd10_spi_mode0/README.md) | Timer-based edge detection, deterministic SCK phase |
-| 11 | [SPI Master — All Modes](vhd11_spi_all_modes/README.md) | CPOL/CPHA generics, all 4 SPI modes from one RTL source |
-| 12 | [SPI Master — With CS/Idle Timing](vhd12_cs_timing/README.md) | Parameterized CS and IDLE delay times, dead-time enforcement between frames |
+| 0 | [N-Bit Adder with VIO (Cmod A7)](vhd02_adder_vio/README.md) | `generate` loops for parametric design, VIO debugging |
+| 1 | [Debouncer (FSM)](vhd03_debouncer/README.md) | FSM + timer integration, metastability from external inputs |
+| 2 | [Button-Selectable Timer & LED Counter](vhd04_tim_cnt/README.md) | Module cascading, edge detection, clock-derived timing |
+| 3 | [Tick-Based PWM Output Module](vhd05_pwm_tick_out/README.md) | Double-buffered duty cycle for glitch-free updates |
+| 4 | [Percentage-based PWM Output](vhd06_pwm_percent/README.md) | Integer rounding (add-50/divide-100), period-boundary latching |
+| 5 | [UART Transmitter](vhd07_uart_tx/README.md) | Bit-timing via counter FSM, shift register TX |
+| 6 | [UART Receiver](vhd08_uart_rx/README.md) | Mid-bit sampling (T/2 start, then every T), frame validation |
+| 7 | [BRAM Usage — Single-Port Block RAM](vhd09_block_ram/README.md) | BRAM inference, READ/WRITE_FIRST modes, pipeline latency |
+| 8 | [SPI Master — Mode 0](vhd10_spi_mode0/README.md) | Timer-based edge detection, deterministic SCK phase |
+| 9 | [SPI Master — All Modes](vhd11_spi_all_modes/README.md) | CPOL/CPHA generics, all 4 SPI modes from one RTL source |
+| 10 | [SPI Master — With CS/Idle Timing](vhd12_cs_timing/README.md) | Parameterized CS and IDLE delay times, dead-time enforcement between frames |
 
 ---
 

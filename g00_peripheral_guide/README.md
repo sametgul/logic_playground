@@ -2,10 +2,6 @@
 
 A step-by-step methodology for writing FPGA peripheral drivers in VHDL — from reading the datasheet to verifying the analog output on the bench. Every step is illustrated with the **AD5628 (PmodDA4)** DAC driver as a worked example.
 
-**Companion references:**
-- [VHDL Template & Syntax Notes](../vhd00_vhdl_template/README.md) — entity structure, coding conventions
-- [VHDL Notes: Pitfalls and Useful Tricks](../vhd01_vhdl_tricks/README.md) — signal vs variable, latch prevention, CDC
-
 ---
 
 ## Step 1 — Datasheet
@@ -201,9 +197,9 @@ Maximum distortion-free sine frequency: $f_{max} = \frac{SR}{2\pi \cdot V_{pk}}$
 | Architecture | Digilent FSM + SPI | custom SPI + wrapper | adds clock wizard + sawtooth gen |
 | Bottom-up VHDL | adapted from Digilent | spi_all_modes → PmodDA4 | spi_cs_timing → PmodDA4 → sawtooth_gen |
 | Unit sim | tb_pmodda4 | tb_PmodDA4, tb_spi_all_modes | tb_PmodDA4 |
-| Integration sim | full chain | full chain | — |
+| Integration sim | full chain | full chain | full chain |
 | Synthesis | Cmod A7 | Cmod A7 | Cmod A7 |
-| Hardware | ZYBO Z7 scope capture | Analog Discovery 3 | — |
+| Hardware | ZYBO Z7 scope capture | Analog Discovery 3 | AD3 logic analyzer at 12.5 MHz (50 MHz too fast for AD3), scope 353.83 Hz |
 
 ---
 
