@@ -158,4 +158,4 @@ Cycles through 9 preset colors, holding each for one second. Uses a free-running
 The lookup is implemented as a **combinational process** — `color_count` changes → R/G/B update immediately in the same delta cycle, no clock edge needed. The PWM controller latches the new duty value at the next period boundary regardless.
 
 ---
-⬅️  [MAIN PAGE](../README.md)
+⬅️ [MAIN PAGE](../README.md) | ➡️ [PWM Percentage Output](../vhd06_pwm_percent/README.md)

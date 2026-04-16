@@ -147,4 +147,4 @@ d01_pmodda4/
 ```
 
 ---
-⬅️  [MAIN PAGE](../README.md)  |  ⬅️  [PMODDA4 Driver (DAC AD5628)](../d00_pmodda4_driver/README.md)
+⬅️ [MAIN PAGE](../README.md) | ⬅️ [PmodDA4 Reference Driver](../d00_pmodda4_driver/README.md) | [SPI CS Timing](../vhd12_cs_timing/README.md) | ➡️ [Sawtooth DAC](../p00_sawtooth_dac/README.md) | [Peripheral Driver Guide](../g00_peripheral_guide/README.md)

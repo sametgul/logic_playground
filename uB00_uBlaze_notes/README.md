@@ -18,3 +18,6 @@ The maximum frequencies for the MicroBlaze core are provided in the following ta
 
 Multiple uB cores can be used in designs. Compare Outputs. Detect faults. 
 Exp: Triple Modular Redundancy (TMR)
+
+---
+⬅️ [MAIN PAGE](../README.md) | ➡️ [MicroBlaze GPIO](../uB01_uBlaze_gpio/README.md)

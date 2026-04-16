@@ -42,3 +42,6 @@ C:/Users/<username>/AppData/Local/Programs/Microsoft VS Code/Code.exe [file name
 ```
 
 Replace `<username>` with your Windows username. The `[file name]` and `-g[line number]` tokens are Vivado placeholders — enter them literally.
+
+---
+⬅️ [MAIN PAGE](../README.md) | ➡️ [Programming FPGA with QSPI Flash](../viv01_programming_fpga/README.md)

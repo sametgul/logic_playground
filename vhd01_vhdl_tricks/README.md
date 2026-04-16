@@ -202,4 +202,4 @@ I will cover these in the future projects in detail.
 1. [VHDL ile FPGA PROGRAMLAMA](https://www.udemy.com/course/vhdl-ile-fpga-programlama-temel-seviye/)
 
 ---
-⬅️  [MAIN PAGE](../README.md)
+⬅️ [MAIN PAGE](../README.md) | ⬅️ [VHDL Template](../vhd00_vhdl_template/README.md) | [Peripheral Driver Guide](../g00_peripheral_guide/README.md)

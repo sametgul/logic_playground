@@ -50,7 +50,7 @@ btn0_prev <= btn0_debounced;
 
 `btn0_prev` captures the debounced button value from the previous cycle. The condition fires only on the transition from `'0'` to `'1'` — a clean single-cycle pulse regardless of how long the button is held.
 
-Note the pre-assignment pattern here: `timer_lim` is updated in the current state alongside the state transition — not at the entry of the next state — so it takes effect exactly when the FSM arrives at the new state. This is the same 1-cycle scheduling behavior covered in the [Debouncer](vhd03_debouncer/README.md#pre-assigning-signals-before-a-state-transition).
+Note the pre-assignment pattern here: `timer_lim` is updated in the current state alongside the state transition — not at the entry of the next state — so it takes effect exactly when the FSM arrives at the new state. This is the same 1-cycle scheduling behavior covered in the [Debouncer](../vhd03_debouncer/README.md#pre-assigning-signals-before-a-state-transition).
 
 ## Debouncer Instantiation
 
@@ -73,4 +73,4 @@ port map(
 `btn0` passes through the debouncer before reaching the FSM — this is the right place to handle metastability and contact bounce.
 
 ---
-⬅️  [MAIN PAGE](../README.md)
+⬅️ [MAIN PAGE](../README.md) | ⬅️ [Debouncer](../vhd03_debouncer/README.md)

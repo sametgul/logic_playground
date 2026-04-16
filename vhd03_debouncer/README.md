@@ -104,4 +104,4 @@ Tip: Put `state`, `tim_en`, `tim_tick`, `timer`, `sig_in`, and `sig_out` on your
 1. [Mehmet Burak Aykenar - Github Repo](https://github.com/mbaykenar)
 
 ---
-⬅️  [MAIN PAGE](../README.md)
+⬅️ [MAIN PAGE](../README.md) | ➡️ [Button Timer & LED Counter](../vhd04_tim_cnt/README.md)

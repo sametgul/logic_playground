@@ -183,4 +183,4 @@ We can also get both sine and cosine signals at the same time by choosing `Sine 
 * The quick reference table makes it easy to choose FTW values for common target frequencies.
 
 ---
-⬅️  [MAIN PAGE](../README.md)
+⬅️ [MAIN PAGE](../README.md) | [Sawtooth DAC](../p00_sawtooth_dac/README.md)

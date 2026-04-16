@@ -105,4 +105,4 @@ The ripple adder is tiny; the debug hub + VIO eats lots of the fabric in this de
 **A single line noting that in real designs you'd replace the ripple carry adder with unsigned addition and let the synthesizer optimize it.**
 
 ---
-⬅️  [MAIN PAGE](../README.md)
+⬅️ [MAIN PAGE](../README.md) | [VHDL Template](../vhd00_vhdl_template/README.md) | [VHDL Pitfalls & Tricks](../vhd01_vhdl_tricks/README.md)

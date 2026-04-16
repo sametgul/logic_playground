@@ -149,4 +149,4 @@ on mismatch. All four modes passed both transactions.
 
 ---
 
-<= [MAIN PAGE](../README.md)
+⬅️ [MAIN PAGE](../README.md) | ⬅️ [SPI Mode 0](../vhd10_spi_mode0/README.md) | ➡️ [SPI CS Timing](../vhd12_cs_timing/README.md)
