@@ -187,4 +187,4 @@ end Behavioral;
 1. [Mehmet Burak Aykenar - Github Repo](https://github.com/mbaykenar)
 
 ---
-⬅️  [MAIN PAGE](../README.md)
+⬅️ [MAIN PAGE](../README.md) | ➡️ [VHDL Pitfalls & Tricks](../vhd01_vhdl_tricks/README.md) | [Peripheral Driver Guide](../g00_peripheral_guide/README.md)

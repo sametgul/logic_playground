@@ -147,4 +147,4 @@ p00_sawtooth_dac/
 
 ---
 
-⬅️ [MAIN PAGE](../README.md) | ⬅️ [SPI CS Timing Module](../vhd12_cs_timing/README.md) | ⬅️ [PmodDA4 Driver](../d01_pmodda4/README.md)
+⬅️ [MAIN PAGE](../README.md) | ⬅️ [PmodDA4 Driver](../d01_pmodda4/README.md) | ⬅️ [SPI CS Timing](../vhd12_cs_timing/README.md) | [Peripheral Driver Guide](../g00_peripheral_guide/README.md)

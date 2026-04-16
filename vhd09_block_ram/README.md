@@ -243,4 +243,4 @@ To use a different color sequence, replace `rainbow.coe` with your own file foll
 4. [BRAM vivado tutorial ECE3610](https://www.youtube.com/watch?v=HPRrzgVfXo8)
 
 ---
-⬅️  [MAIN PAGE](../README.md)
+⬅️ [MAIN PAGE](../README.md) | [UART TX](../vhd07_uart_tx/README.md) | [UART RX](../vhd08_uart_rx/README.md)

@@ -4,12 +4,22 @@ A structured personal reference for FPGA development — covering RTL fundamenta
 
 ---
 
+## Guides & References
+
+| # | Guide | Topic |
+|---|-------|-------|
+| 0 | [VHDL Template & Syntax Notes](vhd00_vhdl_template/README.md) | Entity/architecture structure, coding conventions |
+| 1 | [VHDL Notes: Behaviors, Pitfalls, and Useful Tricks](vhd01_vhdl_tricks/README.md) | Signal vs variable timing, latch prevention, CDC |
+| 2 | [Peripheral Driver Development Guide](g00_peripheral_guide/README.md) | Datasheet → architecture → VHDL → simulation → hardware |
+
+---
+
 ## VHDL / RTL Design
+
+> Numbers match folder suffixes (`vhd02` → row 2, `vhd12` → row 12). `vhd00` and `vhd01` are in **Guides & References** above.
 
 | # | Project | Key Concept |
 |---|---------|-------------|
-| 0 | [VHDL Template & Syntax Notes](vhd00_vhdl_template/README.md) | Entity/architecture structure, coding conventions |
-| 1 | [VHDL Notes: Behaviors, Pitfalls, and Useful Tricks](vhd01_vhdl_tricks/README.md) | Signal vs variable timing, latch prevention, CDC |
 | 2 | [N-Bit Adder with VIO (Cmod A7)](vhd02_adder_vio/README.md) | `generate` loops for parametric design, VIO debugging |
 | 3 | [Debouncer (FSM)](vhd03_debouncer/README.md) | FSM + timer integration, metastability from external inputs |
 | 4 | [Button-Selectable Timer & LED Counter](vhd04_tim_cnt/README.md) | Module cascading, edge detection, clock-derived timing |
@@ -72,6 +82,7 @@ A structured personal reference for FPGA development — covering RTL fundamenta
 
 | # | Project | Key Concept |
 |---|---------|-------------|
+| 0 | `dsp00_dds_from_scratch` — *coming soon* | Phase accumulator, ROM LUT, frequency resolution |
 
 ---
 

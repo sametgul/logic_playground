@@ -2,7 +2,7 @@
 
 A minimal, synthesizable UART **TX** for FPGA boards (tested on **CMOD A7**) and a clean testbench. The design is **8-N-1 or 8-N-2** selectable via generic (8 data bits, no parity, 1 or 2 stop bits), LSB-first, idle level high.
 
-Note: unlike the [Debouncer](../p04_debouncer/README.md) which separates the FSM and timer into two processes, this design combines both into a single clocked process — the timer drives state transitions directly.
+Note: unlike the [Debouncer](../vhd03_debouncer/README.md) which separates the FSM and timer into two processes, this design combines both into a single clocked process — the timer drives state transitions directly.
 
 ---
 
@@ -96,7 +96,7 @@ Sends 3 sequential bytes (`0x01, 0x02, 0x03`) on each button press, then returns
 Key design points:
 
 * `cnt` resets to 0 in `IDLE` — each button press always sends the same sequence
-* `datain <= std_logic_vector(cnt + 1)` uses an expression (not a signal read) to correctly capture the incremented value in the same cycle `start_tx` fires — see [pre-assignment note in Debouncer](../p04_debouncer/README.md#pre-assigning-signals-before-a-state-transition)
+* `datain <= std_logic_vector(cnt + 1)` uses an expression (not a signal read) to correctly capture the incremented value in the same cycle `start_tx` fires — see [pre-assignment note in Debouncer](../vhd03_debouncer/README.md#pre-assigning-signals-before-a-state-transition)
 * `tx_done` falling edge detection (`tx_done_prev = '1' and tx_done_r = '0'`) triggers the next byte — fires after the stop bit period completes and `uart_tx` has returned to `s_IDLE`
 
 Additional pinout vs Top Level 1:
@@ -134,4 +134,4 @@ Expected waveform:
 1. [Mehmet Burak Aykenar - Github](https://github.com/mbaykenar/apis_anatolia)
 
 ---
-⬅️  [MAIN PAGE](../README.md)
+⬅️ [MAIN PAGE](../README.md) | ➡️ [UART Receiver](../vhd08_uart_rx/README.md)

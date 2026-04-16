@@ -97,4 +97,4 @@ I also routed `wrt_done` to a pin to verify the update frequency — it matches 
 There is also a `top.vhd` in `src/` so you can run the same test without creating a block design. Testbench files are in the `tb/` folder.
 
 ---
-⬅️  [MAIN PAGE](../README.md)
+⬅️ [MAIN PAGE](../README.md) | ➡️ [PmodDA4 — From Scratch](../d01_pmodda4/README.md) | [Peripheral Driver Guide](../g00_peripheral_guide/README.md)

@@ -29,3 +29,6 @@ After creating our platform project with the xsa file that we exported from Viva
 
 Create application project
 ![alt text](image-11.png)
+
+---
+⬅️ [MAIN PAGE](../README.md) | ⬅️ [MicroBlaze General Notes](../uB00_uBlaze_notes/README.md)

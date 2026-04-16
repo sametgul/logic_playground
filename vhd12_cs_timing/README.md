@@ -224,4 +224,4 @@ The waveform is divided into four horizontal bands, one per DUT instance. Readin
 
 ---
 
-<= [MAIN PAGE](../README.md)
+⬅️ [MAIN PAGE](../README.md) | ⬅️ [SPI All Modes](../vhd11_spi_all_modes/README.md) | [PmodDA4 Driver](../d01_pmodda4/README.md) | [Sawtooth DAC](../p00_sawtooth_dac/README.md)

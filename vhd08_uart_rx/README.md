@@ -13,7 +13,7 @@ A compact, synthesizable **UART RX** for FPGA boards. Targets classic **8-N-1/2*
 | `src/echo_uart_rx.vhd` | Top level 2 — 3-byte unlock sequence then echo back over TX |
 | `src/tb_uart_rx.vhd` | Testbench — generates UART waveform, observes output |
 
-`uart_tx.vhd` file is in the [UART Transmitter](vhd07_uart_tx/README.md) project folder.
+`uart_tx.vhd` file is in the [UART Transmitter](../vhd07_uart_tx/README.md) project folder.
 
 ---
 ## Features
@@ -107,7 +107,7 @@ LED behavior:
 
 Key design points:
 
-* `start_tx <= '0'` is the default each cycle — prevents `uart_tx` from retriggering on every IDLE re-entry. The pre-assignment pattern from the [Debouncer](../p04_debouncer/README.md#pre-assigning-signals-before-a-state-transition) applies here too: `datain` and `start_tx` are set together in the same cycle so `uart_tx` latches the correct data immediately
+* `start_tx <= '0'` is the default each cycle — prevents `uart_tx` from retriggering on every IDLE re-entry. The pre-assignment pattern from the [Debouncer](../vhd03_debouncer/README.md#pre-assigning-signals-before-a-state-transition) applies here too: `datain` and `start_tx` are set together in the same cycle so `uart_tx` latches the correct data immediately
 * `tx_done_prev <= tx_done` tracks the falling edge of `tx_done` — the FSM advances to the next byte only after the stop bit period completes and `uart_tx` has returned to idle
 * The echo sequence is one-shot per power cycle — after `STATE6` the FSM returns to `STATE1` ready for the next unlock
 
@@ -138,4 +138,4 @@ Generates a correct UART waveform at 115200 Bd on a 100 MHz clock, sends several
 1. [Mehmet Burak Aykenar – GitHub](https://github.com/mbaykenar/apis_anatolia)
 
 ---
-⬅️  [MAIN PAGE](../README.md)
+⬅️ [MAIN PAGE](../README.md) | ⬅️ [UART Transmitter](../vhd07_uart_tx/README.md)

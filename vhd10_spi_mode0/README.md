@@ -126,4 +126,4 @@ Results are checked with `assert` statements — a severity-error report fires o
 2. [Serial Peripheral Interface -- Wikipedia](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface)
 
 ---
-⬅️  [MAIN PAGE](../README.md)  |  ➡️  [vhd11 — SPI All Modes](../vhd11_spi_all_modes/README.md)
+⬅️ [MAIN PAGE](../README.md) | ➡️ [SPI All Modes](../vhd11_spi_all_modes/README.md)

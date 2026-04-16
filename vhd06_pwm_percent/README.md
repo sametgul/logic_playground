@@ -185,4 +185,4 @@ The PWM high pulse widens in clean 10% steps at period boundaries, with no mid-p
 1. [Mehmet Burak Aykenar - Github](https://github.com/mbaykenar/apis_anatolia)
 
 ---
-⬅️  [MAIN PAGE](../README.md)
+⬅️ [MAIN PAGE](../README.md) | ⬅️ [Tick-Based PWM](../vhd05_pwm_tick_out/README.md)
