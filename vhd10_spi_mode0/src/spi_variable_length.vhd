@@ -144,7 +144,7 @@ begin
             r_sck    <= '0';
             timer    <= 0;
             bit_cnt  <= 0;
-            rx_shreg <= (others => '0');
+            rx_shreg   <= (others => '0');
 
             if i_start = '1' then
               -- Drive MSB onto MOSI immediately so it is stable
