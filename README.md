@@ -1,16 +1,14 @@
 # LOGIC PLAYGROUND
 
-A structured personal reference for FPGA development — covering RTL fundamentals, toolflow, and IP integration, built on Xilinx/Vivado with VHDL.
-
----
+A structured personal repository for FPGA development — covering guides, RTL designs, drivers, mini projects, toolflow, and IP integration built on Xilinx/Vivado with VHDL.
 
 ## Guides & References
 
 | # | Guide | Topic |
 |---|-------|-------|
-| 0 | [VHDL Template & Syntax Notes](vhd00_vhdl_template/README.md) | Entity/architecture structure, coding conventions |
-| 1 | [VHDL Notes: Behaviors, Pitfalls, and Useful Tricks](vhd01_vhdl_tricks/README.md) | Signal vs variable timing, latch prevention, CDC |
-| 2 | [Peripheral Driver Development Guide](g00_peripheral_guide/README.md) | Datasheet → architecture → VHDL → simulation → hardware |
+| 0 | [VHDL Template & Syntax Notes](gu00_vhdl_template/README.md) | Entity/architecture structure, coding conventions |
+| 1 | [VHDL Notes: Behaviors, Pitfalls, and Useful Tricks](gu01_vhdl_tricks/README.md) | Signal vs variable timing, latch prevention, CDC |
+| 2 | [Peripheral Driver Development Guide](gu02_peripheral_guide/README.md) | Datasheet → architecture → VHDL → simulation → hardware |
 
 ---
 

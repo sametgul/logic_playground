@@ -53,7 +53,6 @@ When writing a **combinational process**, watch out for:
 1. **Sensitivity list**
 
    * All signals that are read must appear in the sensitivity list.
-   * Otherwise: simulation mismatches.
 
 2. **Missing branches**
 Always drive every output on every path.
@@ -68,23 +67,23 @@ Always drive every output on every path.
 ### Example 1: Unintended Latch
 
 ```vhdl
-PROCESS3 : process (sel, b, c)
+p3 : process (sel, b, c)
 begin
   if (sel = '0') then
     a <= b + c;
   end if;
-end process PROCESS3;
+end process p3;
 ```
 
 Here, if `sel = '1'`, signal `a` keeps its previous value. Because this is not sequential logic, the synthesizer infers a **latch**. Vivado synthesizes it but gives a warning.
 
 ```vhdl
-p_comb : process(all) is -- VHDL-2008
+p_COMB : process(all) is -- VHDL-2008
 begin
-  a <= (others => '0');                -- default
+  a <= (others => '0');         -- default
   if sel = '0' then
     a <= b + c;
-  end if;                              -- no latch because default covers else
+  end if;                       -- no latch because default covers else
 end process;
 ```
 
@@ -101,7 +100,7 @@ begin
 end process PROCESS4;
 ```
 
-Here, `a` is both read and written inside the same process. This creates a **combinational feedback loop**. Vivado synthesizes it without warnings, but it may cause oscillation or unstable behavior. This may cause glitches or metastability in silicon.
+Here, `a` is both read and written inside the same process. This creates a **combinational feedback loop**. Vivado synthesizes it without warnings, but it may cause oscillation or unstable behavior.
 
 ## Hierarchy Optimization in Vivado
 
@@ -190,10 +189,10 @@ When struggling with timing violations:
 
 ## Clock-domain crossing (CDC) quick recipes
 
-I will cover these in the future projects in detail.
+I will cover these in detail in future projects and link back here.
 
 * **Single-bit control** from async/other domain → **2-FF synchronizer** (or 3-FF for extra MTBF).
-* **Pulses** → convert to **toggle** in source domain; detect edge in dest domain.
+* **Pulses** → convert to **toggle** in source domain; detect edge in destination domain.
 * **Multi-bit data** → **dual-clock FIFO**, or Gray-coded counters with dual-port RAM.
 * **Handshakes** → ready/valid or req/ack with proper synchronizers on each crossing bit.
 
@@ -202,4 +201,4 @@ I will cover these in the future projects in detail.
 1. [VHDL ile FPGA PROGRAMLAMA](https://www.udemy.com/course/vhdl-ile-fpga-programlama-temel-seviye/)
 
 ---
-⬅️ [MAIN PAGE](../README.md) | ⬅️ [VHDL Template](../vhd00_vhdl_template/README.md) | [Peripheral Driver Guide](../g00_peripheral_guide/README.md)
+⬅️ [MAIN PAGE](../README.md) | ⬅️ [VHDL Template](../gu00_vhdl_template/README.md) | ➡️  [Peripheral Driver Guide](../gu02_peripheral_guide/README.md)
