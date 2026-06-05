@@ -1,4 +1,4 @@
-# DEBOUNCER (FSM)
+# Button Debouncer — FSM Design & Signal Timing
 
 When the input toggles, the system enters a transition state and waits a fixed time (debounce window). If the input stays stable until the timer expires, it commits to the new stable state; if it bounces back, it returns to the current stable state.
 
@@ -11,6 +11,8 @@ States:
 * `sONE` and `sZERO` — **stable** states (idle and pressed, respectively)
 * `sONEtoZERO` and `sZEROtoONE` — **transition** states (debounce window running)
 * `sINIT` — initializes FSM according to `ACTIVE_LOW` generic
+
+![FSM state diagram](docs/debouncer_fsm.svg)
 
 ### Transition logic (the core idea)
 

@@ -46,6 +46,8 @@ process(clk) begin
 end process;
 ```
 
+> **Worked example:** [vhd03 — Button Debouncer](../vhd03_debouncer/README.md) covers two practical consequences of signal scheduling in a real multi-process FSM design: how to avoid a 1-cycle delay when two processes communicate through a signal (using a concurrent assignment instead of a registered one), and why signals that must be ready on entry to a new state have to be scheduled in the *current* state alongside the transition — not inside the next state.
+
 ## Common Combinational Pitfalls
 
 When writing a **combinational process**, watch out for:

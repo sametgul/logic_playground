@@ -1,32 +1,3 @@
-# Vivado generated files
-*.jou
-*.log
-*.str
-*.xpr
-*.bit
-*.ltx
-
-# Vivado project directories
-.Xil/
-*/impl_1/
-*/synth_1/
-*/.srcs/
-*/.cache/
-*/.hw/
-*/.ip_user_files/
-*/.sim/
-*/vivado*.jou
-*/vivado*.log
-
-# IP output products
-*/ip/*/
-!*/ip/*/*.xci
-
-# Simulation artifacts
-*.vcd
-*.wdb
-*.wcfg
-
 # OS junk
 .DS_Store
 Thumbs.db
