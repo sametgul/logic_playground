@@ -17,7 +17,7 @@ A structured personal repository for FPGA development — covering guides, RTL d
 | # | Project | Key Concept |
 |---|---------|-------------|
 | 0 | [N-Bit Adder with VIO (Cmod A7)](vhd02_adder_vio/README.md) | `generate` loops for parametric design, VIO debugging |
-| 1 | [Debouncer (FSM)](vhd03_debouncer/README.md) | FSM + timer integration, metastability from external inputs |
+| 1 | [Button Debouncer — FSM Design & Signal Timing](vhd03_debouncer/README.md) | FSM + timer integration, signal scheduling, metastability from external inputs |
 | 2 | [Button-Selectable Timer & LED Counter](vhd04_tim_cnt/README.md) | Module cascading, edge detection, clock-derived timing |
 | 3 | [Tick-Based PWM Output Module](vhd05_pwm_tick_out/README.md) | Double-buffered duty cycle for glitch-free updates |
 | 4 | [Percentage-based PWM Output](vhd06_pwm_percent/README.md) | Integer rounding (add-50/divide-100), period-boundary latching |
