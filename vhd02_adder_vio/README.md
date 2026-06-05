@@ -2,7 +2,7 @@
 
 This small project demonstrates how to build an **N-bit adder** using the `generate` construct in VHDL and how to drive/observe it with **VIO (Virtual I/O)** IP in Vivado.
 
-Since the **CMOD A7** board has no physical switches or LEDs, VIO is used to provide inputs and observe outputs in real time. 
+Since the **CMOD A7** board has no physical switches or LEDs, VIO is used to provide inputs and observe outputs in real time.
 
 ## 1) Full Adder and N-Bit Adder
 
@@ -36,7 +36,7 @@ end Behavioral;
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
-entity n_bit_adder is 
+entity n_bit_adder is
 generic(
     N : integer := 8
 );
@@ -53,7 +53,7 @@ architecture Behavioral of n_bit_adder is
     signal carry : std_logic_vector(N downto 0) := (others => '0');
 begin
     N_ADDER_GEN: for i in 0 to N-1 generate
-        adder_i : entity work.full_adder 
+        adder_i : entity work.full_adder
         port map(
             a    => A_in(i),
             b    => B_in(i),
@@ -70,7 +70,7 @@ end Behavioral;
 
 The **N-bit adder** is created by chaining full adders in a generate loop. `carry(0)` is tied to the external `C_in`, and the final `carry(N)` becomes the `C_out`.
 
-In the sources, you’ll see N instances (`adder_i`) generated:
+In `Sources` tab, you’ll see N instances (`adder_i`) generated:
 
 ![n\_adder](docs/n_adder.png)
 
@@ -98,11 +98,9 @@ You can now drive inputs (`A_in`, `B_in`, `C_in`) and observe outputs (`S_out`, 
 
 ## VIO is Expensive!
 
-The ripple adder is tiny; the debug hub + VIO eats lots of the fabric in this demo. That’s normal: debug cores trade area for visibility. As you widen buses or add ILA, usage rises. 
+The ripple adder is tiny; the debug hub + VIO eats lots of the fabric in this demo. That’s normal: debug cores trade area for visibility. As you widen buses or add ILA, usage rises.
 
 ![util](docs/util.png)
 
-**A single line noting that in real designs you'd replace the ripple carry adder with unsigned addition and let the synthesizer optimize it.**
-
 ---
-⬅️ [MAIN PAGE](../README.md) | [VHDL Template](../vhd00_vhdl_template/README.md) | [VHDL Pitfalls & Tricks](../vhd01_vhdl_tricks/README.md)
+⬅️ [MAIN PAGE](../README.md) | ➡️ [Debouncer](../vhd03_debouncer/README.md)
