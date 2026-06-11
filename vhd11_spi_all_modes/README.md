@@ -10,8 +10,9 @@ Parameterizable clock frequency, SCK frequency, and transaction width.
 
 | File | Description |
 |------|-------------|
-| `src/spi_all_modes.vhd`    | SPI master RTL -- 3-state FSM, timer-based edge detection, all 4 modes |
-| `src/tb_spi_all_modes.vhd` | Testbench -- four parallel DUTs (one per mode), behavioral slave models, assertions |
+| `src/spi_all_modes.vhd`      | SPI master RTL — 3-state FSM, timer-based edge detection, all 4 modes, with CS |
+| `src/spi_all_modes_noCS.vhd` | SPI master, all 4 modes, without CS control |
+| `src/tb_spi_all_modes.vhd`   | Testbench — four parallel DUTs (one per mode), behavioral slave models, assertions |
 
 ---
 

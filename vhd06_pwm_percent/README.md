@@ -2,6 +2,17 @@
 
 A small, synthesizable VHDL PWM block that drives a single output with a percentage-based duty input. The module is parameterized by the input clock frequency and the target PWM frequency. It uses **double-buffering** to update the duty cycle **glitch-free** at the start of each PWM period.
 
+## Source Files
+
+| File | Description |
+|------|-------------|
+| `src/pwm_out.vhd` | PWM generator — percentage duty cycle input, double-buffered |
+| `src/tb_pwm.vhd` | Testbench — steps duty 0→100% in 10% increments |
+| `src/tb_top.vhd` | Top-level testbench |
+| `src/top.vhd` | Top level for hardware test |
+
+---
+
 ## Why `TIM_LIM` is calculated
 
 `TIM_LIM` is the number of clock ticks in one PWM period:

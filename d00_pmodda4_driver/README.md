@@ -2,6 +2,18 @@
 
 This repository includes a revised VHDL driver for the Digilent **PmodDA4** (Analog Devices **AD5628**, 12-bit octal DAC), a simple testbench, and a small use-case study. The goal is to document not only *how* to talk to the DAC over SPI, but also *how fast* you can update it in a way that preserves waveform quality.
 
+## Source Files
+
+| File | Description |
+|------|-------------|
+| `src/pmodda4_master.vhd` | AD5628 SPI driver FSM — 32-bit frame construction, write-and-update command |
+| `src/toothsaw_gen.vhd` | Sawtooth generator — counts 0→4095, fires one DAC write per `wrt_done` |
+| `src/top.vhd` | Top level for ZYBO Z7 hardware test |
+| `tb/tb_pmodda4.vhd` | Testbench for the AD5628 driver |
+| `tb/tb_top.vhd` | Top-level testbench |
+
+---
+
 ## TL;DR
 
 * The AD5628’s SPI interface supports **up to 50 MHz SCLK**.

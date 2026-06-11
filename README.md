@@ -35,6 +35,7 @@ A structured personal repository for FPGA development — covering guides, RTL d
 | # | Project | Key Concept |
 |---|---------|-------------|
 | 0 | [Sawtooth Wave Generator via PmodDA4](p00_sawtooth_dac/README.md) | Clock Wizard IP (12→100 MHz), 50 MHz SPI, pipelined waveform generation |
+| 1 | [RGB LED Controller](prj00_rgb_controller/README.md) | Three-channel PWM RGB driver, 50% duty cap, combinational color lookup |
 
 ---
 

@@ -1,8 +1,15 @@
 # Button-Selectable Timer & LED Counter
 
-In the previous project, we built a [Debouncer](vhd03_debouncer/README.md) — now it's time to use it. This project implements a **clock-based timer with selectable periods**, controlled by a single push button, driving a **2-bit LED counter**. Target board is CMOD A7 so peripherals are limited to one button and two LEDs, but the design scales easily.
+In the previous project, we built a [Debouncer](../vhd03_debouncer/README.md) — now it's time to use it. This project implements a **clock-based timer with selectable periods**, controlled by a single push button, driving a **2-bit LED counter**. Target board is CMOD A7 so peripherals are limited to one button and two LEDs, but the design scales easily.
 
-Source files are in `src/` as usual.
+## Source Files
+
+| File | Description |
+|------|-------------|
+| `src/btn_timer.vhd` | Top level — timer, LED counter, button FSM with debouncer |
+| `src/debouncer.vhd` | Debouncer component (from [vhd03](../vhd03_debouncer/README.md)) |
+
+---
 
 ## Core Idea
 
@@ -29,8 +36,6 @@ This makes the design portable — changing `CLK_FREQ` at instantiation recalcul
 - `counter` increments (2-bit `unsigned`, wraps naturally at 3 → 0)
 - `led <= counter` drives the LEDs directly
 
-Note: the check `if counter = 15` in the code is unreachable since `counter` is 2-bit — it wraps at 3 automatically via `unsigned` overflow. That line can be safely removed.
-
 ## Button FSM & Edge Detection (`pBTN`)
 
 A simple FSM cycles through the four timing states on each button press:
@@ -50,18 +55,18 @@ btn0_prev <= btn0_debounced;
 
 `btn0_prev` captures the debounced button value from the previous cycle. The condition fires only on the transition from `'0'` to `'1'` — a clean single-cycle pulse regardless of how long the button is held.
 
-Note the pre-assignment pattern here: `timer_lim` is updated in the current state alongside the state transition — not at the entry of the next state — so it takes effect exactly when the FSM arrives at the new state. This is the same 1-cycle scheduling behavior covered in the [Debouncer](../vhd03_debouncer/README.md#pre-assigning-signals-before-a-state-transition).
+This uses the same pre-assignment pattern covered in the [Debouncer](../vhd03_debouncer/README.md#pre-assigning-signals-before-a-state-transition) : `timer_lim` is updated in the current state alongside the state transition — not at the entry of the next state — so it takes effect exactly when the FSM arrives at the new state.
 
 ## Debouncer Instantiation
 
 The debouncer from the previous project is instantiated directly:
 
 ```vhdl
-inst_DEB: entity work.debouncer 
+inst_DEB: entity work.debouncer
 generic map(
     CLK_FREQ   => 12_000_000,
-    DEBTIME_MS => 5,               
-    ACTIVE_LOW => true       
+    DEBTIME_MS => 5,
+    ACTIVE_LOW => true
 )
 port map(
     clk     => clk,
@@ -73,4 +78,4 @@ port map(
 `btn0` passes through the debouncer before reaching the FSM — this is the right place to handle metastability and contact bounce.
 
 ---
-⬅️ [MAIN PAGE](../README.md) | ⬅️ [Debouncer](../vhd03_debouncer/README.md)
+⬅️ [MAIN PAGE](../README.md) | ⬅️ [Debouncer](../vhd03_debouncer/README.md) | ➡️ [Tick-Based PWM Output Module](../vhd05_pwm_tick_out/README.md)

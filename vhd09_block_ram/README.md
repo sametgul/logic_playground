@@ -12,7 +12,6 @@ It supports **READ_FIRST** and **WRITE_FIRST** modes and configurable read laten
 | `src/spbram.vhd` | Single-port BRAM RTL — parametric read mode and latency |
 | `src/tb_spbram.vhd` | Testbench — exercises all four mode/latency combinations |
 | `src/uart_bram.vhd` | Top level 1 — receive 3 bytes over UART, store in BRAM, echo back in reverse |
-| `src/rainbow_rom.vhd` | Xilinx Block Memory Generator IP — 256×24-bit ROM initialized from `.coe` file |
 | `src/rgb_bram.vhd` | Top level 2 — rainbow color cycle driven from BRAM LUT |
 | `src/rainbow.coe` | BRAM initialization file — 256-entry HSV rainbow color table |
 
