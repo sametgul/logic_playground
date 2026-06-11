@@ -172,24 +172,17 @@ Simulation ends with `"SIM COMPLETE -- all tests passed"` on success.
 
 ---
 
-## File Structure
+## Source Files
 
-```
-p00_sawtooth_dac/
-├── src/
-│   ├── top_sawtooth.vhd    ← Top-level: clk_wiz + sawtooth_gen + PmodDA4
-│   ├── sawtooth_gen.vhd    ← Falling-edge busy detector, 12-bit counter
-│   ├── PmodDA4.vhd         ← AD5628 FSM (INIT_REF + TRANSFER states)
-│   ├── spi_cs_timing.vhd   ← Universal SPI master, all 4 modes + CS/idle timing
-│   └── Cmod-A7-Master.xdc  ← Pin constraints
-├── tb/
-│   └── tb_PmodDA4.vhd      ← Self-checking testbench with Mode 2 slave model
-└── doc/
-    ├── sim_integration_toplevel.png  ← Integration sim, top-level wide view
-    ├── sim_transaction_timing.png    ← Cursor measurement, 689.724 ns per transaction
-    ├── sim_fsm_states.png            ← PmodDA4 + SPI FSM state transitions zoomed
-    └── hw_scope_sawtooth.png         ← Oscilloscope sawtooth output, 353.83 Hz
-```
+| File | Description |
+|------|-------------|
+| `src/top_sawtooth.vhd` | Top level — Clock Wizard + sawtooth generator + PmodDA4 |
+| `src/sawtooth_gen.vhd` | Sawtooth generator — falling-edge busy detector, 12-bit counter |
+| `src/PmodDA4.vhd` | AD5628 FSM — auto INIT_REF on first write, then DAC writes |
+| `src/spi_cs_timing.vhd` | Universal SPI master — all 4 modes, configurable CS setup/idle timing |
+| `src/Cmod-A7-Master.xdc` | Pin constraints |
+| `tb/tb_PmodDA4.vhd` | Self-checking testbench with Mode 2 slave model |
+| `tb/tb_top_sawtooth.vhd` | Top-level integration testbench |
 
 ---
 

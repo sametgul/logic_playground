@@ -25,7 +25,7 @@ architecture Behavioral of btn_timer is
 	type t_state is (s_LIM2S, s_LIM1S, s_LIM500mS, s_LIM250mS);
 	signal state : t_state := s_LIM2S;
 	
-    signal counter   : unsigned(1 downto 0) := "00";
+	signal counter   : unsigned(1 downto 0) := "00";
 	signal btn0_prev : std_logic := '1';
 	signal btn0_debounced : std_logic := '0';
 	
@@ -67,11 +67,11 @@ begin
 		end if;
 	end process;
 	
-	inst_DEB: entity work.debouncer 
+	inst_DEB: entity work.debouncer
 	generic map(
-		CLK_FREQ => 12_000_000,
-        DEBTIME_MS => 5,               
-        ACTIVE_LOW => true       
+		CLK_FREQ   => CLK_FREQ,
+		DEBTIME_MS => 5,
+		ACTIVE_LOW => true
 	)
 	Port map(
 		clk    => clk,

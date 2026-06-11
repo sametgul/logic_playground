@@ -14,6 +14,7 @@ polls the status register over SPI to detect conversion completion.
 | [src/ltc2986_spi.vhd](src/ltc2986_spi.vhd) | Low-level SPI master — Mode 0, variable-length transactions, CS setup/idle timing |
 | [src/ltc2986_ctrl.vhd](src/ltc2986_ctrl.vhd) | High-level controller — initialization, convert, poll, read result, continuous loop |
 | [src/tb_ltc2986_ctrl.vhd](src/tb_ltc2986_ctrl.vhd) | Testbench — LTC2986 slave model, two full measurement cycles, self-checking assertions |
+| [src/tb_ltc2986_spi.vhd](src/tb_ltc2986_spi.vhd) | Testbench for the SPI layer in isolation |
 
 ---
 

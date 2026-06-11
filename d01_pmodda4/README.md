@@ -129,22 +129,16 @@ The AD5628 `CMD` field **must be `0011`** (Write AND Update DAC Channel n), not 
 
 ---
 
-## File Structure
+## Source Files
 
-```
-d01_pmodda4/
-├── Notes.md             ← AD5628 datasheet study notes
-├── src/
-│   ├── PmodDA4.vhd          ← AD5628 controller state machine
-│   ├── spi_all_modes.vhd    ← Universal SPI master (CPOL/CPHA generics)
-│   ├── top.vhd              ← Cmod A7 top-level (BTN0 → start, LED → done)
-│   └── Cmod-A7-Master.xdc  ← Pin constraints
-├── tb/
-│   ├── tb_PmodDA4.vhd       ← Self-checking testbench with slave model
-│   └── tb_spi_all_modes.vhd ← SPI module testbench
-└── doc/
-    └── *.png                ← Simulation and hardware screenshots
-```
+| File | Description |
+|------|-------------|
+| `src/PmodDA4.vhd` | AD5628 controller FSM — auto INIT_REF on first write, then TRANSFER |
+| `src/spi_all_modes.vhd` | Universal SPI master — CPOL/CPHA generics, all 4 modes |
+| `src/top.vhd` | Top level — BTN0 triggers start, LED signals done |
+| `src/Cmod-A7-Master.xdc` | Pin constraints |
+| `tb/tb_PmodDA4.vhd` | Self-checking testbench — Mode 2 slave model, two-frame assertions |
+| `tb/tb_spi_all_modes.vhd` | SPI module testbench |
 
 ---
 ⬅️ [MAIN PAGE](../README.md) | ⬅️ [PmodDA4 Reference Driver](../d00_pmodda4_driver/README.md) | [SPI CS Timing](../vhd12_cs_timing/README.md) | ➡️ [Sawtooth DAC](../p00_sawtooth_dac/README.md) | [Peripheral Driver Guide](../g00_peripheral_guide/README.md)

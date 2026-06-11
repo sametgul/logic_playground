@@ -48,6 +48,28 @@ end process;
 
 > **Worked example:** [vhd03 — Button Debouncer](../vhd03_debouncer/README.md) covers two practical consequences of signal scheduling in a real multi-process FSM design: how to avoid a 1-cycle delay when two processes communicate through a signal (using a concurrent assignment instead of a registered one), and why signals that must be ready on entry to a new state have to be scheduled in the *current* state alongside the transition — not inside the next state.
 
+## Edge Detection on Non-Clock Signals
+
+To detect a rising (or falling) edge on an arbitrary signal, register its previous value and compare:
+
+```vhdl
+process(clk) is
+begin
+  if rising_edge(clk) then
+    if sig = '1' and sig_prev = '0' then
+      -- rising edge: single-cycle pulse
+    end if;
+    sig_prev <= sig;  -- update after the check
+  end if;
+end process;
+```
+
+`sig_prev` captures the value from the previous cycle. The condition fires only on the `'0'→'1'` transition, producing a clean one-cycle pulse regardless of how long `sig` stays high. For a **falling edge** flip the comparison (`sig = '0' and sig_prev = '1'`); for **any edge** use XOR (`sig xor sig_prev = '1'`).
+
+> **Note:** `sig_prev` must be updated **after** the comparison (or equivalently at the end of the process — VHDL signal scheduling ensures the check still sees the old value). Placing the update before the `if` would mean both sides of the comparison see the same cycle's value and the edge is never detected.
+
+> **Worked example:** [vhd04 — Button-Selectable Timer & LED Counter](../vhd04_tim_cnt/README.md) uses this pattern to advance a timing FSM on each button press without re-triggering while the button is held.
+
 ## Common Combinational Pitfalls
 
 When writing a **combinational process**, watch out for:

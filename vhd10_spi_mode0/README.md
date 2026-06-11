@@ -8,8 +8,12 @@ A synthesizable, full-duplex **SPI Master** for FPGA boards. Implements **Mode 0
 
 | File | Description |
 |------|-------------|
-| `src/spi_mode0.vhd` | Core SPI master FSM — 3-state, timer-based edge detection |
+| `src/spi_mode0.vhd` | Core SPI master FSM — 3-state, timer-based edge detection, with CS control |
+| `src/spi_mode0_noCS.vhd` | Mode 0 SPI master without CS control |
+| `src/spi_variable_length.vhd` | Mode 0 SPI master with variable frame length |
 | `src/tb_spi_mode0.vhd` | Testbench — full-duplex slave model, two-transaction sequence with assertions |
+| `src/tb_spi_mode0_noCS.vhd` | Testbench for the no-CS variant |
+| `src/tb_spi_variable_frame.vhd` | Testbench for the variable-length variant |
 
 ---
 

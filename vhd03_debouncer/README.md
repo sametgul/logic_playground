@@ -2,6 +2,15 @@
 
 When the input toggles, the system enters a transition state and waits a fixed time (debounce window). If the input stays stable until the timer expires, it commits to the new stable state; if it bounces back, it returns to the current stable state.
 
+## Source Files
+
+| File | Description |
+|------|-------------|
+| `src/debouncer.vhd` | Button debouncer FSM — timer-based, configurable debounce time and active level |
+| `src/tb_debouncer.vhd` | Testbench — simulates bouncing input, verifies debounced output |
+
+---
+
 ## FSM Design
 
 Assuming the buttons are active-low:
@@ -106,4 +115,4 @@ Tip: Put `state`, `tim_en`, `tim_tick`, `timer`, `sig_in`, and `sig_out` on your
 1. [Mehmet Burak Aykenar - Github Repo](https://github.com/mbaykenar)
 
 ---
-⬅️ [MAIN PAGE](../README.md) | ➡️ [Button Timer & LED Counter](../vhd04_tim_cnt/README.md)
+⬅️ [MAIN PAGE](../README.md) | ⬅️ [N-Bit Adder with VIO](../vhd02_adder_vio/README.md) | ➡️ [Button Timer & LED Counter](../vhd04_tim_cnt/README.md)

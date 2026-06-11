@@ -4,6 +4,14 @@ This project demonstrates generating sine waves on FPGA using the **Xilinx DDS C
 
 ---
 
+## Source Files
+
+| File | Description |
+|------|-------------|
+| `src/one_pulse_after_n.vhd` | One-shot pulse generator — fires `PULSE_LEN` cycles starting N clocks after reset |
+
+---
+
 ## Frequency Resolution
 
 The DDS output frequency is controlled by the **Frequency Tuning Word (FTW)**.
