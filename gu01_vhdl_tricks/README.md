@@ -25,6 +25,24 @@ begin
 end process;
 ```
 
+* **Variables persist across activations.** A process variable is static storage — it is *not* re-initialized on every clock edge. If you accumulate into it (e.g. an XOR feedback chain in a loop) without explicitly resetting it first, it silently carries over its final value from the previous activation into the new one.
+
+```vhdl
+process(clk) is
+  variable acc : std_logic;
+begin
+  if rising_edge(clk) then
+    acc := '0'; -- must reset explicitly; without this, acc keeps last cycle's value
+    for i in 0 to 9 loop
+      acc := acc xor data(i);
+    end loop;
+    result <= acc;
+  end if;
+end process;
+```
+
+> **Worked example:** [dsp00 — LFSR](../dsp00_lfsr/README.md) hit this exact bug: the XOR feedback variable wasn't reset before the loop, so each cycle's feedback calculation silently included the previous cycle's leftover value instead of starting fresh.
+
 ### “Last assignment wins” (inside one process)
 
 ```vhdl
