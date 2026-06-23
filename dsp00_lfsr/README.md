@@ -41,22 +41,34 @@ This expression means that to generate the feedback signal, the outputs of the *
 | Name | Type | Default | Description |
 |---|---|---|---|
 | `DATA_WIDTH` | `integer` | `10` | Width of the LFSR register, in bits. |
-| `POLY_MASK` | `std_logic_vector` | `"1001000000"` | Tap mask for the feedback polynomial. A `'1'` at index `i` means `data_r(i)` is XORed into the feedback. Must have a `'1'` at index `DATA_WIDTH - 1` (see Gotchas below). |
+| `POLY_MASK` | `std_logic_vector(9 downto 0)` | `"1001000000"` | Tap mask for the feedback polynomial. A `'1'` at index `i` means `data_r(i)` is XORed into the feedback. Must have a `'1'` at index `DATA_WIDTH - 1` (see Gotchas below). |
 
 **Ports**
 
 | Name | Direction | Type | Description |
 |---|---|---|---|
 | `clk` | in | `std_logic` | Clock. All activity is synchronous to its rising edge. |
-| `rst` | in | `std_logic` | Synchronous reset. Reloads the seed (single `'1'` at the MSB) into `data_r`. |
 | `enable_i` | in | `std_logic` | When `'1'`, advances the LFSR by one state per clock edge. |
 | `lfsr_o` | out | `std_logic_vector(DATA_WIDTH - 1 downto 0)` | Current LFSR state. |
 
 ---
 
+## Simulation
+
+`tb_lfsr.vhd` instantiates `lfsr` with `DATA_WIDTH => 10` and the default `POLY_MASK`, driven by a 10 ns clock (`CLK_PRD`):
+
+* `enable_i` goes high after 5 clock periods and stays high for 1050 cycles — enough to walk through nearly the entire 1023-state maximal-length sequence.
+* `enable_i` then drops, and the simulation ends via `assert FALSE ... severity failure`.
+
+![lfsr_sig](./docs/lfsr_sig.png)
+
+`lfsr_o` toggles pseudo-randomly once `enable_i` goes high — the "noisy" appearance across the ~10 µs trace is the expected behavior of an LFSR walking through its maximal-length sequence rather than a clean, repeating pattern.
+
+---
+
 ## Gotchas
 
-* **Seed vs. `POLY_MASK` alignment:** the seed has a single `'1'` at the MSB. If `POLY_MASK` doesn't also have a `'1'` at that index, the feedback is always `'0'` and the LFSR locks up at all-zero permanently (see "Seed and Reset" below).
+* **Seed vs. `POLY_MASK` alignment:** `data_r`'s initial value (the seed) has a single `'1'` at the MSB. If `POLY_MASK` doesn't also have a `'1'` at that index, the feedback is always `'0'` and the LFSR locks up at all-zero permanently. There's no `rst` port to recover from this at runtime — the seed only applies once, at elaboration/power-up.
 * **GHDL and generic-dependent aggregates:** the seed was originally written as `(DATA_WIDTH - 1 => '1', others => '0')`. GHDL rejects this with `non-locally static choice for an aggregate is allowed only if it is the only choice`, because `DATA_WIDTH - 1` depends on a generic and can't be mixed with `others`. Vivado tolerates this; GHDL doesn't. Fixed by using a concatenation instead, which has only one choice per aggregate: `'1' & (DATA_WIDTH - 2 downto 0 => '0')`.
 
 ---
@@ -68,13 +80,8 @@ This expression means that to generate the feedback signal, the outputs of the *
 * Inside the process, `xor_feedback_v` is declared as a `variable`. While VHDL signals (`signal`) do not update until the process concludes, variables update instantaneously. This immediate assignment is necessary to sequentially accumulate multiple XOR operations within a single clock cycle.
 * The variable is reset to `'0'` at the start of every clock cycle, before the loop begins, because `A XOR 0 = A` (zero is the neutral element for XOR). Without this reset, the variable would carry its value over from the previous clock edge and corrupt the next feedback calculation, since process variables retain their value between activations.
 
-### Hardware Inference of the `for ... loop`
+### How `POLY_MASK` Bits Map to the Polynomial
 
-* The loop used here is not a software-style "temporal loop." The synthesis tool unrolls this loop completely to construct a physical parallel layout of **AND gates** and an **XOR tree**.
-* Any bit positions marked with a '1' in the polynomial mask (`POLY_MASK`) are routed into the XOR feedback tree (via `data_r(i) and POLY_MASK(i)`), while positions marked with a '0' are filtered out, leaving them mathematically inert.
-
-### Seed and Reset
-
-* `data_r` is initialized with a single `'1'` at the MSB and `'0'` elsewhere — this is the seed.
-* `rst` is a synchronous reset: on a clock edge where `rst = '1'`, `data_r` reloads that same seed value.
-* The seed's `'1'` bit must land on an index where `POLY_MASK` is also `'1'`. Otherwise every `AND` in the feedback loop evaluates to `'0'`, the feedback bit is always `'0'`, and the LFSR locks up at all-zero permanently.
+* `data_r(i)` represents the polynomial term $x^{i+1}$. For the default `POLY_MASK = "1001000000"`, `data_r(9)` is the $x^{10}$ tap and `data_r(6)` is the $x^7$ tap. The `+1` constant term isn't a separate tap — it's just the wire that closes the loop, feeding `xor_feedback_v` back into `data_r(0)`.
+* The loop computes `Σ (data_r(i) AND POLY_MASK(i)) mod 2` — a dot product over GF(2). A `'0'` in `POLY_MASK` forces that term to `'0'` (a no-op for XOR); a `'1'` passes `data_r(i)` straight through.
+* Since `POLY_MASK` is a compile-time constant, synthesis unrolls the loop and optimizes away every AND gate fed by a constant `'0'`. What's left is just two AND gates and one XOR gate wired straight from `data_r(9)` and `data_r(6)` — there's no "loop" in the final netlist, just a static XOR tree shaped by wherever `POLY_MASK` has `'1'`s.
