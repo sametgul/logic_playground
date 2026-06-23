@@ -163,14 +163,14 @@ begin
   -- Minimal stimulus: 0% → 100% with 10% steps
   pSTIMULI: process
   begin
-    wait for 5*CLK_PERIOD;  
+    wait for 5*CLK_PERIOD;
 
     for k in 0 to 10 loop
       duty_cycle <= std_logic_vector(to_unsigned(k*10, 7));
       wait for PWM_PERIOD;  -- One period with new duty cycle
     end loop;
-    
-      wait for 5*PWM_PERIOD; 
+
+      wait for 5*PWM_PERIOD;
 
 
     assert false report "SIM DONE" severity failure;
