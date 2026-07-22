@@ -1,4 +1,4 @@
-# PWM OUTPUT
+# Percentage-Based PWM Output
 
 A small, synthesizable VHDL PWM block that drives a single output with a percentage-based duty input. The module is parameterized by the input clock frequency and the target PWM frequency. It uses **double-buffering** to update the duty cycle **glitch-free** at the start of each PWM period.
 
@@ -185,15 +185,9 @@ The PWM high pulse widens in clean 10% steps at period boundaries, with no mid-p
 
 ![testbench](docs/testbench.png)
 
-## Notes
-
-* **Latency:** Duty updates take effect one PWM period later by design (glitch-free).
-* **Synthesis:** The multiply-by-constant and division by 100 are optimized by modern tools (e.g., mapped to DSP or shift-add logic). Resource cost is minimal for typical FPGAs.
-* **Extension:** To drive an RGB LED, instantiate three copies with independent duties. For smoother low-level brightness, add a 256-entry gamma LUT on the duty path before rounding.
-
 ## References
 
 1. [Mehmet Burak Aykenar - Github](https://github.com/mbaykenar/apis_anatolia)
 
 ---
-⬅️ [MAIN PAGE](../README.md) | ⬅️ [Tick-Based PWM](../vhd05_pwm_tick_out/README.md)
+⬅️ [MAIN PAGE](../README.md) | ⬅️ [Tick-Based PWM](../vhd05_pwm_tick_out/README.md) | ➡️ [UART Transmitter ](../vhd07_uart_tx/README.md)

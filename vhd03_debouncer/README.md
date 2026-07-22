@@ -55,7 +55,7 @@ generic (
 
 The design is split into two clocked processes: `pMAIN` (FSM) and `pTIMER` (counter). This is a deliberate architectural choice — each process has a single responsibility.
 
-However, this introduces an important VHDL subtlety: **when one process writes a signal, the other process does not see the new value until the next clock cycle.** This is because signal assignments are scheduled — they take effect only after all processes finish their current delta cycle.
+However, this introduces an important VHDL subtlety: **when one process writes a signal, the other process does not see the new value until the next clock cycle. This is because signal assignments are scheduled — they take effect only after all processes finish their current delta cycle.**
 
 In this design, `pTIMER` writes `tim_tick` and `pMAIN` reads it. If `tim_tick` were a registered signal (driven inside `pTIMER`'s clocked block), `pMAIN` would always see it one cycle late — meaning the FSM transition would fire one cycle after the timer actually expired.
 

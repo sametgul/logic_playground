@@ -1,4 +1,4 @@
-# UART Transmitter (VHDL)
+# UART Transmitter
 
 A minimal, synthesizable UART **TX** for FPGA boards (tested on **CMOD A7**) and a clean testbench. The design is **8-N-1 or 8-N-2** selectable via generic (8 data bits, no parity, 1 or 2 stop bits), LSB-first, idle level high.
 
@@ -134,4 +134,4 @@ Expected waveform:
 1. [Mehmet Burak Aykenar - Github](https://github.com/mbaykenar/apis_anatolia)
 
 ---
-⬅️ [MAIN PAGE](../README.md) | ➡️ [UART Receiver](../vhd08_uart_rx/README.md)
+⬅️ [MAIN PAGE](../README.md) | ⬅️ [Percentage-Based PWM](../vhd06_pwm_percent/README.md) | ➡️ [UART Receiver](../vhd08_uart_rx/README.md)

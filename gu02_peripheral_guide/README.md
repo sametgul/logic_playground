@@ -1,6 +1,6 @@
 # Peripheral Driver Development Guide
 
-My methodology for writing FPGA peripheral drivers in VHDL — from reading the datasheet to verifying the analog output on the bench. Every step is illustrated with the **AD5628 (PmodDA4)** DAC driver as a worked example.
+My methodology for writing FPGA peripheral drivers in VHDL — from reading the datasheet to verifying the analog output on the bench. Every step is illustrated with the **AD5628 (PmodDA4)** DAC driver I worked on as an example.
 
 ---
 
@@ -61,16 +61,8 @@ top / stimulus
 Define the **port contract** of each module before writing any logic. Decide:
 - What triggers a transaction? (`start` pulse, or continuous?)
 - How does the caller know when it is safe to send next? (`busy` flag or `done` pulse?)
-- Where does frame assembly live? (in the wrapper, not the SPI core)
 
-> **AD5628 example:**
-> ```
-> top_sawtooth.vhd
->  ├── clk_wiz_0          (Xilinx IP: 12 MHz → 100 MHz)
->  ├── sawtooth_gen.vhd   (fires start on every busy falling edge)
->  └── PmodDA4.vhd        (INIT_REF FSM + frame assembly)
->       └── spi_cs_timing.vhd  (universal SPI master, all 4 modes)
-> ```
+This will be a coarse decision and can be updated later according to the needs.
 
 ---
 
@@ -78,17 +70,11 @@ Define the **port contract** of each module before writing any logic. Decide:
 
 Write the **innermost module first**, work outward. Each module must have a clean, tested port contract before the next layer is written. We need to write the related testbench for each structure before implementing the upper one.
 
-**Order for a typical SPI peripheral:**
+**Order for this specific case:**
 1. SPI core (`spi_cs_timing`) — timer, edge detect, shift register
 2. Driver wrapper (`PmodDA4`) — frame assembly, init sequence FSM
 3. Stimulus / waveform gen (`sawtooth_gen`) — generates the data stream
 4. Top level (`top_sawtooth`) — wires everything, instantiates clock IP
-
-**Key VHDL conventions** (see also [vhd00](../gu00_vhdl_template/README.md)):
-- One entity per file, filename matches entity name
-- All registers on `rising_edge(clk)`, no asynchronous resets unless required
-- Generics for anything that might change: `CLK_FREQ`, `SCLK_FREQ`, `DATA_W`, `CPOL`, `CPHA`
-- Default pulse signals to `'0'` at the top of the clocked process; assert for exactly one cycle
 
 ---
 
@@ -99,7 +85,6 @@ Write a **testbench per module** with self-checking assertions. Do not move to t
 **Testbench essentials:**
 - A behavioral slave model (shift register clocked on the correct SPI edge)
 - Assertions that check the exact bit pattern received, not just "something arrived" if you can.
-- An `assert FALSE report "SIM DONE" severity failure` at the end to stop the simulator cleanly
 
 ---
 
@@ -125,7 +110,7 @@ Before going to hardware:
 - **No latches** — every signal driven in a combinational process must have a default assignment or be covered in all branches
 - **No undriven outputs** — check the synthesis warnings, not just errors
 - **Timing constraints pass** — add a `create_clock` constraint for every clock; check the timing summary for negative slack
-- **Clock domain crossings** — if any signal crosses clock domains, it needs a 2-FF synchroniser; Vivado will warn but not always catch functional CDC bugs
+- **Clock domain crossings** — if any signal crosses clock domains, we need to take care of them. Vivado will warn but not always catch functional CDC bugs
 
 > **AD5628 example:** using Clock Wizard to generate 100 MHz from 12 MHz means `clk` and `clk100` are different domains. All logic is driven by `clk100`; the raw `clk` connects only to the Clock Wizard input. No CDC paths.
 
@@ -133,15 +118,15 @@ Before going to hardware:
 
 ## Step 7 — Hardware Verification
 
-### Logic Analyzer first
-Capture the SPI bus and verify frame content matches simulation. We have not connected the component, just checking the spi wires of the FPGA at this point.
+### Logic Analyzer first (Optional)
+If something is not working, we can do this step. Capture the SPI bus and verify frame content matches simulation. We have not connected the component, just checking the spi wires of the FPGA at this point.
 
 | Tool | What to check |
 |------|--------------|
 | Saleae / Analog Discovery | CS timing (t4, t8), frame bit pattern, SCLK frequency |
 | Vivado ILA | Same, but triggered on internal signals |
 
-### Oscilloscope second
+### Signal Validation: Oscilloscope
 Once frames are confirmed correct, verify the connected hardware behavior.
 
 > **AD5628 example:** CH_A programmed with `0xABC` (2748), internal 2.5 V reference.
@@ -149,7 +134,7 @@ Once frames are confirmed correct, verify the connected hardware behavior.
 > Measured: **1.686 V**, noise **5.3 mV pk-pk**. ✓
 
 ### Analog limits to keep in mind
-Even if the SPI bus is perfect, the DAC output has physical limits:
+Sometimes we need to consider more things so make sure to read datasheet throughly. For this specific example, even if the SPI bus is perfect, the DAC output has physical limits:
 
 | Limit | AD5628 spec | Effect |
 |-------|------------|--------|
