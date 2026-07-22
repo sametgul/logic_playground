@@ -221,11 +221,7 @@ end Behavioral;
 
 ## Timing Closure Trick
 
-When struggling with timing violations:
-
-* Add 2–3 input registers in front of the inputs of an entity; enable **retiming** in synthesis  (`Settings → Synthesis → Retiming`). Tools can legally move these through logic to balance paths, and may improve timing.
-* Pipeline arithmetic (DSP48s love registered inputs and mids).
-* Constrain clocks properly; avoid multicycle clocking unless you fully understand them.
+When struggling with timing violations, add 2–3 input registers in front of the inputs of an entity; enable **retiming** in synthesis  (`Settings → Synthesis → Retiming`). Tools can legally move these through logic to balance paths, and may improve timing.
 
 ![register](docs/replace_registers.png)
 
@@ -240,7 +236,8 @@ I will cover these in detail in future projects and link back here.
 
 ## References
 
-1. [VHDL ile FPGA PROGRAMLAMA](https://www.udemy.com/course/vhdl-ile-fpga-programlama-temel-seviye/)
+1. [Mehmet Burak Aykenar - Github Repo](https://github.com/mbaykenar/apis_anatolia)
+2. [VHDL ile FPGA PROGRAMLAMA](https://www.udemy.com/course/vhdl-ile-fpga-programlama-temel-seviye/)
 
 ---
 ⬅️ [MAIN PAGE](../README.md) | ⬅️ [VHDL Template](../gu00_vhdl_template/README.md) | ➡️  [Peripheral Driver Guide](../gu02_peripheral_guide/README.md)

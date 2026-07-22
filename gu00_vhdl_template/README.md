@@ -189,7 +189,7 @@ end Behavioral;
 
 ## References
 
-1. [Mehmet Burak Aykenar - Github Repo](https://github.com/mbaykenar)
+1. [Mehmet Burak Aykenar - Github Repo](https://github.com/mbaykenar/apis_anatolia)
 
 ---
 ⬅️ [MAIN PAGE](../README.md) | ➡️ [VHDL Pitfalls & Tricks](../gu01_vhdl_tricks/README.md)

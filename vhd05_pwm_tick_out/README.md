@@ -1,4 +1,4 @@
-# Tick-Based PWM Output Module
+# Tick-Based PWM Output
 
 A **clock-synchronous PWM generator** with a fixed PWM frequency and a programmable duty cycle. Fully generic with respect to system clock frequency, PWM frequency, and duty resolution.
 

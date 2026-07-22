@@ -1,4 +1,4 @@
-# UART Receiver (VHDL)
+# UART Receiver
 
 A compact, synthesizable **UART RX** for FPGA boards. Targets classic **8-N-1/2** framing (8 data bits, no parity, one or two stop bits). Line idles high, data is LSB-first.
 
@@ -138,4 +138,4 @@ Generates a correct UART waveform at 115200 Bd on a 100 MHz clock, sends several
 1. [Mehmet Burak Aykenar – GitHub](https://github.com/mbaykenar/apis_anatolia)
 
 ---
-⬅️ [MAIN PAGE](../README.md) | ⬅️ [UART Transmitter](../vhd07_uart_tx/README.md)
+⬅️ [MAIN PAGE](../README.md) | ⬅️ [UART Transmitter](../vhd07_uart_tx/README.md)  ➡️ [BRAM Usage](../vhd09_block_ram/README.md)
