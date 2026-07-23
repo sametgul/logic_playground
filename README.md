@@ -27,6 +27,7 @@ A structured personal repository for FPGA development — covering guides, RTL d
 | 8 | [SPI Master — Mode 0](vhd10_spi_mode0/README.md) | Timer-based edge detection, deterministic SCK phase |
 | 9 | [SPI Master — All Modes](vhd11_spi_all_modes/README.md) | CPOL/CPHA generics, all 4 SPI modes from one RTL source |
 | 10 | [SPI Master — With CS/Idle Timing](vhd12_cs_timing/README.md) | Parameterized CS and IDLE delay times, dead-time enforcement between frames |
+| 11 | [CDC Synchronizer + Synchronized UART RX](vhd14_synchronizer/README.md) | Generic N-stage synchronizer, `ASYNC_REG` attribute, CDC applied to an async serial input |
 
 ---
 
