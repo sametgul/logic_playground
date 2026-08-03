@@ -6,11 +6,20 @@ We don't always follow a fully synchronous design methodology, where every FF in
 - The clock distribution network can introduce clock skew, meaning the clock signal can arrive later at some FFs than others.
 - We don't need to design the whole structure around the fastest unit in the project. Only the block that needs speed runs on the fast clock; the rest can use a slower one. This also reduces power consumption, since dynamic power scales directly with the clock speed of the units in the design.
 
+Everything below builds on the basic N-stage synchronizer from [vhd14_synchronizer](../vhd14_synchronizer/README.md) — see that file for what metastability actually is and why stacking flip-flops fixes it. This file picks up from there with *pulses* (single-cycle events) instead of levels, plus the timing constraints and reset handling a real CDC design needs around them.
+
 ## Pulse Synchronizer
+
+`vhd14_synchronizer`'s N-stage chain works for a level signal, but not for a single-cycle pulse: if the pulse doesn't happen to line up with a destination clock edge, the synchronizer can miss it completely. The fix is to stop synchronizing the *pulse* itself and instead synchronize a *level* that's guaranteed to hold long enough to be caught, then regenerate a pulse from that level on the other side.
 
 The following is the hardware needed to implement a pulse synchronizer:
 
 ![Toggle-based pulse synchronizer: an XOR toggles a flip-flop in the source clock domain (C1), the toggled signal passes through a two-stage synchronizer in the destination domain (C2), and a final XOR edge-detects the transition to regenerate a single-cycle pulse](docs/pulse_sync_schematic.png)
+
+How it works, stage by stage:
+1. **Toggle (source domain):** each time `pulse_a` fires, an XOR flips a flip-flop's own output (`toggle <= toggle xor pulse_a`). That toggle output is a *level* that changes state once per pulse and then holds steady — exactly what a plain synchronizer can safely catch, unlike the pulse itself.
+2. **Synchronize (destination domain):** the toggle level passes through the usual multi-stage `ASYNC_REG` synchronizer chain to resolve metastability from the domain crossing, same mechanism as `vhd14_synchronizer`.
+3. **Edge-detect (destination domain):** XOR-ing the last two stages of the synchronized chain produces a single-cycle pulse exactly when the synchronized toggle changes value — regenerating a clean one-cycle `pulse_b` in the new clock domain.
 
 The testbench below shows the crossing in simulation: when `pulse_a` goes high on a rising edge of `clka`, `pulse_b` is produced three rising edges of `clkb` later — clearly visible on the waveform between the yellow markers.
 
@@ -56,6 +65,16 @@ So, we need to be extra careful about the speed differences between domains and 
 
 ---
 
+## Why We Need Constraints
+
+If we don't account for this, signals crossing between clock domains can violate setup and hold time requirements.
+
+The tool has no way of knowing that we've already handled a CDC path safely (e.g. with a synchronizer) — we have to tell it explicitly through timing constraints.
+
+`set_max_delay` is a good way to solve this: it bounds the path delay without requiring a full clock-to-clock timing relationship between two asynchronous clocks.
+
+---
+
 ## Gotcha: Uninitialized Signals Can Permanently Poison a Toggle Synchronizer
 
 Building the example above surfaced a nasty simulation-only bug: the composed testbench (`Sys1`/`Sys2` connected through two pulse synchronizers) never finished. `rdy_o` never asserted, so `wait until rdy_o = '1'` blocked forever.
@@ -81,6 +100,8 @@ XOR-ing in that `'U'` poisons `pulse_a_toggle` to `'U'` — and it never clears,
 ## Reset Synchronization
 
 A reset needs to be **asserted asynchronously** (it must take effect immediately, regardless of the clock, since the whole point is recovering from a bad/unknown state) but **released synchronously** (so the release edge can't land inside a flip-flop's recovery/removal window and itself cause metastability). Releasing an async reset directly, with no synchronization, just trades one CDC problem for another.
+
+*Recovery/removal is the reset-specific equivalent of setup/hold: recovery time is how long the reset input must be released before a clock edge for that edge to reliably capture new data; removal time is how long it must stay asserted after an edge. Violate either and the flip-flop can go metastable on release, exactly like an ordinary setup/hold violation would.*
 
 The fix applied to `cdc_pulse_sync`: a small 2-flop reset synchronizer per clock domain.
 
@@ -114,12 +135,70 @@ So: if the design only ever needs a clean power-up start, v1 is arguably the mor
 
 ---
 
-## Why We Need Constraints
+## Synthesizing the Project
 
-If we don't account for this, signals crossing between clock domains can violate setup and hold time requirements.
+Now let's add two clocks and a constraint file, and see the "Why We Need Constraints" problem above actually happen in Vivado. Normally you'd start from the board manufacturer's constraint file, but for the sake of studying the CDC constraint flow, let's build one from scratch.
 
-The tool has no way of knowing that we've already handled a CDC path safely (e.g. with a synchronizer) — we have to tell it explicitly through timing constraints.
+Steps:
+1. Synthesize the project and open the synthesized design.
+2. `Tools -> I/O Ports`, then autoplace and fix all ports, and save the project.
+3. Open `Edit Timing Constraints`, and create both clocks from their source ports (`clka`, `clkb`) at the desired periods.
 
-`set_max_delay` is a good way to solve this: it bounds the path delay without requiring a full clock-to-clock timing relationship between two asynchronous clocks.
+![Create Clock dialog: clka at 10 ns period, clkb at 7.5 ns period, both sourced from their respective ports](docs/create_clock_constraints.png)
+
+The constraints file now holds both the auto-placed pin assignments and the two clocks:
+
+![Generated XDC: PACKAGE_PIN assignments for all ports plus create_clock for clka (10 ns) and clkb (7.5 ns)](docs/xdc_pins_and_clocks.png)
+
+Running implementation now gives a timing error because of the CDC paths:
+
+![Implementation Complete, Failed Timing! banner in Vivado](docs/implementation_failed_timing.png)
+
+For timing to pass, Worst Negative Slack (WNS) must be non-negative — here it's clearly not:
+
+![Timing summary: WNS -0.399 ns, TNS -1.585 ns, 6 failing endpoints out of 77](docs/timing_summary_failing.png)
+
+Even though we built a structure that safely handles this crossing (the pulse synchronizer), the tool has no way of knowing that — it just sees an inter-clock path with no exception and times it as an ordinary setup relationship. We can see exactly which paths are violating:
+
+![Device view and Tcl console listing the failing inter-clock paths from clka to clkb](docs/failing_paths_device_view.png)
+
+Right-click a violating path -> View Path Report for the details:
+
+![Path report for Path 44: source clka, destination clkb, slack -0.288 ns, full source/data/destination clock path breakdown](docs/path_report_detail.png)
+
+`Report Clock Interaction` shows how the tool is currently treating the relationship between the two clocks — both directions come back **red (unsafe)**:
+
+![Report Clock Interaction matrix: clka-to-clkb and clkb-to-clka both shown red/unsafe, since nothing tells the tool the crossing is handled](docs/clock_interaction_report.png)
+
+To fix this, we add a timing exception in `Edit Timing Constraints`:
+
+![Exceptions panel: Set False Path, Set Multicycle Path, Set Maximum Delay, Set Minimum Delay, all currently empty](docs/exceptions_panel.png)
+
+There are a few valid methods (`set_false_path`, `set_clock_groups`, `set_multicycle_path`), but the one used here — and generally the recommended one — is `Set Maximum Delay`, using the destination clock's period as the path delay:
+
+![Set Maximum Delay dialog: path delay 7.5 ns, from clock clka, to clock clkb](docs/set_max_delay_dialog.png)
+
+On the Options tab, enable **"Set maximum delay for only the datapath"** — this is the `-datapath_only` flag, which ignores clock skew and hold time on this path since the crossing is already handled by the synchronizer:
+
+![Options tab: "Set maximum delay for only the datapath (skew and hold time are ignored)" checked](docs/set_max_delay_datapath_only_option.png)
+
+Do the same in the other direction, `clkb` to `clka`:
+
+![Set Maximum Delay list: both directions present, 7.5 ns clka-to-clkb and 10 ns clkb-to-clka, both Data Path Only](docs/set_max_delay_both_directions.png)
+
+The constraints file is filled in automatically:
+
+![Final XDC: set_max_delay -datapath_only -from clka -to clkb 7.500, and the reverse -from clkb -to clka 10.000](docs/xdc_final_with_max_delay.png)
+
+Running implementation again — `Report Clock Interaction` now shows both directions as **"Max Delay Datapath Only"** instead of unsafe, and timing passes clean:
+
+![Report Clock Interaction matrix after the fix: clka-to-clkb and clkb-to-clka now shown purple/Max Delay Datapath Only instead of red, all endpoints clean](docs/clock_interaction_report_fixed.png)
+
+
+## References
+
+1. [Mehmet Burak Aykenar – GitHub](https://github.com/mbaykenar/apis_anatolia)
 
 ---
+
+⬅️ [MAIN PAGE](../README.md) | ⬅️ [CDC Synchronizer + Synchronized UART RX](../vhd14_synchronizer/README.md)
