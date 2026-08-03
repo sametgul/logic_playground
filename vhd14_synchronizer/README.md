@@ -17,7 +17,9 @@ A generic multi-flip-flop **synchronizer** for crossing an asynchronous single-b
 
 ## Why Synchronize `rx_in`?
 
-`rx_in` comes from an external UART line — it changes asynchronously with respect to `clk` and can violate setup/hold on the first flip-flop it hits, risking metastability. Passing it through `N` flip-flops first (with `ASYNC_REG` marking them so placement/timing tools treat them correctly) gives the signal time to resolve before it reaches the FSM logic in `uart_rx`.
+A flip-flop needs its `D` input to hold steady for a small window around the clock edge — setup time before the edge, hold time after it. `rx_in` comes from an external UART line, so it changes asynchronously with respect to `clk` and doesn't know or care about that window. If it changes *inside* the window, the flop's output can hang briefly at an invalid voltage between `'0'` and `'1'` before settling to one or the other — that unresolved state is **metastability**. It usually resolves within a fraction of a clock cycle, but if it hasn't resolved by the time downstream logic reads it, different gates can interpret the still-settling voltage differently, corrupting the design's state.
+
+The fix isn't to prevent metastability (you can't — any circuit sampling an async signal can hit it) but to give it time to resolve before the value is used. Passing `rx_in` through `N` flip-flops first does exactly that: even if the first flop goes metastable, it almost always resolves to a clean `'0'` or `'1'` well within one clock period, so the second flop samples a settled value; each additional stage is extra insurance against the rare case where resolution takes longer. `ASYNC_REG` marks these flops so placement/timing tools keep them close together and don't try to time or optimize the (inherently asynchronous, unanalyzable) first-stage capture like ordinary logic.
 
 ```
 rx_in ──► [FF]─►[FF]─►[FF] ──► sync_out ──► uart_rx.rx_in
@@ -52,6 +54,10 @@ Generics: `CLK_FREQ`, `BAUD_RATE` (passed through to `uart_rx`), `N` (synchroniz
 ## Testbench (`tb_uart_rx_synched.vhd`)
 
 Drives a clean UART frame (`0xAB` at 115200 Bd / 100 MHz) into `rx_in` and instantiates `uart_rx_synched` as the DUT, exercising the synchronizer and RX core together end-to-end.
+
+## References
+
+1. [Mehmet Burak Aykenar – GitHub](https://github.com/mbaykenar/apis_anatolia)
 
 ---
 
