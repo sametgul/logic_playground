@@ -12,6 +12,7 @@ This note contains VHDL syntax that I like to use and sometimes forget and revis
 `signal s2    : integer range 0 to 2**N-1 := 0; -- N=8 so the range is 0 to 255`
 * Using `'length` attribute to get signal widths.
 `cntr1_o <= std_logic_vector(to_unsigned(cntr1, cntr1_o'length));`
+* Using a short reset pulse is a good mechanism to perform system initialization. Especially during simulations, signals might have `U` as value. We can initialize all signals during reset phase.
 
 ```vhdl
 --------------------------------------------------------------------------------
@@ -152,7 +153,7 @@ end Behavioral;
 
 ### Testbench Template
 
-The following code is commonly used when writing testbenches.
+The following code is commonly used when writing testbenches. For a synchronous system with positive edge-triggered FFs, an input signal must be stable around the rising edge of the clock signal to satisfy the setup and hold time constraints. One easy way to achieve this is to change an input signal’s value during the ’1’-to-’0’ transition of the clk signal. The `falling-edge` function of the std-logic-1164 package checks this condition.
 
 ```vhdl
 
@@ -165,12 +166,21 @@ end tb_top;
 architecture Behavioral of tb_top is
 
     constant CLK_PERIOD : time      := 10 ns;
-    signal   clk        : std_logic := '0';
+    signal   clk,reset  : std_logic := '0';
 
 begin
 
+    -- reset asserted for T/2
+    reset <= '1', '0' after T / 2;
+
     pSTIMULI: process begin
         -- ...
+
+        wait until falling_edge(clk);
+
+        for i in 1 to 10 loop -- run 10 clocks
+            wait until falling_edge(clk);
+        end loop;
 
         assert false
             report "SIM DONE"
