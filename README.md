@@ -28,6 +28,8 @@ A structured personal repository for FPGA development — covering guides, RTL d
 | 9 | [SPI Master — All Modes](vhd11_spi_all_modes/README.md) | CPOL/CPHA generics, all 4 SPI modes from one RTL source |
 | 10 | [SPI Master — With CS/Idle Timing](vhd12_cs_timing/README.md) | Parameterized CS and IDLE delay times, dead-time enforcement between frames |
 | 11 | [CDC Synchronizer + Synchronized UART RX](vhd14_synchronizer/README.md) | Generic N-stage synchronizer, `ASYNC_REG` attribute, CDC applied to an async serial input |
+| 12 | [Clock Domain Crossing — Pulse Synchronizer](vhd15_CDC/README.md) | Toggle-based pulse synchronizer, `set_max_delay` CDC timing constraints, reset synchronization |
+| 13 | `vhd18_async_fifo` — *coming soon* | Asynchronous FIFO for CDC data transfer |
 
 ---
 
@@ -54,6 +56,7 @@ A structured personal repository for FPGA development — covering guides, RTL d
 |---|---------|-------------|
 | 0 | [PmodDA4 Driver — Digilent reference adaptation](d00_pmodda4_driver/README.md) | SPI frame construction, analog slew rate constraints |
 | 1 | [PmodDA4 Driver — AD5628 with Universal SPI Master](d01_pmodda4/README.md) | From-scratch FSM over generic SPI IP, INIT_REF sequencing, CS/idle timing constraints |
+| 2 | `d02_ltc2986` — *in progress* | LTC2986 temperature sensor driver, no-CS SPI mode 0 variant |
 
 ---
 
@@ -66,6 +69,15 @@ A structured personal repository for FPGA development — covering guides, RTL d
 
 ---
 
+## Zynq (PS+PL / AXI)
+
+| # | Project | Key Concept |
+|---|---------|-------------|
+| 0 | [AXI GPIO — Switch to LED](z00_axi_gpio/README.md) | Zynq PS + AXI GPIO block design, ZedBoard JTAG/UART bring-up, boot mode jumpers |
+| 1 | [Custom AXI4-Lite IP — Switch to LED](z01_custom_AXI4_per/README.md) | Packaging a custom AXI4-Lite peripheral, register map design, IP repository workflow |
+
+---
+
 ## Vivado Toolflow
 
 | # | Topic | Key Concept |
@@ -73,6 +85,7 @@ A structured personal repository for FPGA development — covering guides, RTL d
 | 0 | [Vivado Troubleshooting Log](viv00_troubleshoots/README.md) | Running log of Vivado issues and fixes |
 | 1 | [Programming FPGA with Quad SPI Flash](viv01_programming_fpga/README.md) | Bitstream compression, QSPI flash programming workflow |
 
+[`XDC Files/`](XDC%20Files) holds reusable board constraint files (e.g. `Cmod-A7-Master.xdc`) referenced across the RTL projects above.
 
 ---
 
@@ -80,7 +93,8 @@ A structured personal repository for FPGA development — covering guides, RTL d
 
 | # | Project | Key Concept |
 |---|---------|-------------|
-| 0 | `dsp00_dds_from_scratch` — *coming soon* | Phase accumulator, ROM LUT, frequency resolution |
+| 0 | [Pseudo-Random Number Generator using LFSR](dsp00_lfsr/README.md) | Maximum-length sequences, irreducible characteristic polynomials |
+| 1 | `dsp01_dds_from_scratch` — *coming soon* | Phase accumulator, ROM LUT, frequency resolution |
 
 ---
 

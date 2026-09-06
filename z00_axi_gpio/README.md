@@ -8,21 +8,21 @@ A walkthrough of building a simple AXI GPIO design on the ZedBoard: reading the 
 
 Add the Zynq7 Processing System and an AXI GPIO block to the block design, then configure the AXI GPIO's **Board** tab to associate `GPIO` with the switches and `GPIO2` with the LEDs.
 
-![AXI GPIO IP configuration](image-3.png)
+![AXI GPIO IP configuration](images/axi_gpio_board_config.png)
 
 ### 1.2 Run Block/Connection Automation
 
 Run **Run Block Automation** and **Run Connection Automation**, then regenerate the layout. This wires up the AXI interconnect and reset network automatically.
 
-![Completed block design](image-4.png)
+![Completed block design](images/block_design.png)
 
 ## 2. Synthesis, Implementation, and Bitstream
 
 Create the HDL wrapper and generate the bitstream, then open the implemented design to check timing and resource usage.
 
-![Design timing summary](image-9.png)
+![Design timing summary](images/timing_summary.png)
 
-![Utilization report](image-10.png)
+![Utilization report](images/utilization_report.png)
 
 All timing constraints were met, with no failing endpoints on setup, hold, or pulse width.
 
@@ -32,7 +32,7 @@ Export hardware with **Include Bitstream**, then launch the Vitis IDE. Create a 
 
 Vitis auto-generates example programs for the IP in the design — the GPIO driver examples were a useful starting point for reading the switches and driving the LEDs, plus using the PS UART for console output.
 
-![Vitis platform / BSP with GPIO driver examples](image-11.png)
+![Vitis platform / BSP with GPIO driver examples](images/vitis_bsp_examples.png)
 
 ## 4. Application Code
 
@@ -86,19 +86,19 @@ In the Vitis Assistant window, click **Build**, then **Debug** → **Launch on H
 
 Fresh out of the box, the ZedBoard's jumper configuration is set to boot Linux from the SD card.
 
-![Out-of-box SD card boot jumper configuration](image-5.png)
+![Out-of-box SD card boot jumper configuration](images/zedboard_sd_boot_jumpers.png)
 
 ### Switching to JTAG boot mode
 
 To run a Vitis application via JTAG instead, the boot mode jumpers (JP7–JP11, labeled MODE0–MODE4) need to be moved to the **GND** position — all five set to GND selects JTAG boot mode.
 
-![JP7–JP11 boot mode jumpers set to GND](image-6.png)
+![JP7–JP11 boot mode jumpers set to GND](images/zedboard_jtag_boot_jumpers.png)
 
 ### Reference: ZedBoard Configuration Modes
 
 Per the ZedBoard user guide's configuration table, this confirms the JTAG and SD Card boot mode encodings on MIO[6:2].
 
-![ZedBoard Configuration Modes table](image-7.png)
+![ZedBoard Configuration Modes table](images/zedboard_config_modes_table.png)
 
 ## 7. Gotchas
 
@@ -115,3 +115,7 @@ Per the ZedBoard user guide's configuration table, this confirms the JTAG and SD
 2. **AXI UART Lite (soft IP in PL)** — A separate peripheral added manually to the block design for a *second*, independent UART, typically routed to different physical pins (e.g. a PMOD), not the onboard USB-UART.
 
 **Bottom line:** to see `printf` output over the USB-UART cable, AXI UART Lite is not needed — just the PS7 UART, enabled and routed correctly in the Zynq PS configuration.
+
+## References
+
+1. [Mehmet Burak Aykenar – GitHub](https://github.com/mbaykenar/zynq-soc-hw-sw-design)
