@@ -84,6 +84,7 @@ A structured personal repository for FPGA development — covering guides, RTL d
 |---|-------|-------------|
 | 0 | [Vivado Troubleshooting Log](viv00_troubleshoots/README.md) | Running log of Vivado issues and fixes |
 | 1 | [Programming FPGA with Quad SPI Flash](viv01_programming_fpga/README.md) | Bitstream compression, QSPI flash programming workflow |
+| 2 | [ModelSim Setup with Vivado](viv02_modelsim_setup/README.md) | Xilinx sim libraries, ModelSim integration, UVVM Light setup |
 
 [`XDC Files/`](XDC%20Files) holds reusable board constraint files (e.g. `Cmod-A7-Master.xdc`) referenced across the RTL projects above.
 
