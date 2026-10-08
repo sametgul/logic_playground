@@ -9,6 +9,7 @@ A structured personal repository for FPGA development — covering guides, RTL d
 | 0 | [VHDL Template & Syntax Notes](gu00_vhdl_template/README.md) | Entity/architecture structure, coding conventions |
 | 1 | [VHDL Notes: Behaviors, Pitfalls, and Useful Tricks](gu01_vhdl_tricks/README.md) | Signal vs variable timing, latch prevention, CDC |
 | 2 | [Peripheral Driver Development Guide](gu02_peripheral_guide/README.md) | Datasheet → architecture → VHDL → simulation → hardware |
+| 3 | [UVVM Verification Guide](gu03_uvvm_verification_guide/README.md) | GHDL + UVVM setup, self-checking testbenches, verification depth tiers |
 
 ---
 
