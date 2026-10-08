@@ -2,6 +2,8 @@
 
 I wanted to start using [UVVM](https://github.com/UVVM/UVVM_Light) for my testbenches, but the Vivado simulator doesn't play well with it. UVVM leans heavily on VHDL-2008, and XSim's support for that is still patchy. So I set up ModelSim as the simulator for my Vivado projects. These are the steps I followed and the gotchas I hit along the way.
 
+For UVVM with GHDL instead of ModelSim, see the [UVVM Verification Guide](../gu03_uvvm_verification_guide/README.md).
+
 ---
 
 ## Step 1: Install ModelSim
