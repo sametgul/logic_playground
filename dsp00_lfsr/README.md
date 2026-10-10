@@ -7,35 +7,17 @@ If you need a random number generator or some random noise, an LFSR is a good st
 
 The maximum number of unique states a Linear Feedback Shift Register (LFSR) can generate is $2^n - 1$, where $n$ is the bit-width (excluding the all-zeros state). For an LFSR to achieve this maximum length—referred to as the **Maximum Length Sequence** or **m-sequence**—its feedback path must be governed by a characteristic polynomial with specific mathematical properties.
 
-### Field Background: GF(2) and GF(2^n)
-
-`GF(q)` ("Galois Field with `q` elements") is a finite set where addition, subtraction, multiplication, and division (except by zero) all behave like ordinary arithmetic.
-
-* **GF(2)** has just two elements, `{0, 1}`, with addition = XOR and multiplication = AND (`1 + 1 = 0` is why XOR is "addition" here). This is exactly what one flip-flop computes — every XOR tap and AND-with-`POLY_MASK` in the design is GF(2) arithmetic, not just a coincidentally-similar logic gate.
-* **GF(2^n)** is built from GF(2) by taking polynomials of degree `< n` with GF(2) coefficients, and reducing modulo a degree-`n` irreducible polynomial. For `n = 4` this gives GF(16): the 4 bits of a 4-bit register are the coefficients of one such polynomial, so the whole register represents one element of GF(16).
-* Shifting the LFSR by one step is the same operation as multiplying that polynomial by `x`, reduced modulo the characteristic polynomial. The field's `2^n - 1` non-zero elements form a group under multiplication; a **primitive** polynomial is one whose root generates that entire group, so repeated multiplication by `x` (i.e. repeated shifting) visits every non-zero element before returning to the start.
-
-This is why "irreducible" and "primitive" below are properties of the polynomial, not just a name for arbitrary tap positions — they decide how large of a field the register represents, and whether shifting walks the whole field or only part of it.
-
 ### Irreducible Polynomial
 
 In mathematics, an irreducible polynomial is one that **cannot be factored** into a product of two lower-degree polynomials.
 
 * If the chosen polynomial is not irreducible (i.e., it can be factored), the LFSR will enter a short cycle and repeat itself prematurely. For instance, instead of traversing 1023 states in a 10-bit register design, the sequence might loop back after only 30 to 40 states.
 
-**Example (irreducible, but — see below — not primitive):** $x^4 + x^3 + x^2 + x + 1$. Over GF(2), the only irreducible quadratic is $x^2+x+1$, and $(x^2+x+1)^2 = x^4+x^2+1 \neq x^4+x^3+x^2+x+1$, so this quartic can't be a product of two (possibly repeated) lower-degree factors — it's irreducible.
-
-### Primitive Polynomial — *The Critical Criterion*
+### Primitive Polynomial
 
 Every primitive polynomial is irreducible, but not every irreducible polynomial is primitive. For an LFSR to guarantee a full period of exactly $2^n - 1$ states, the polynomial must be **Primitive**.
 
 * A primitive polynomial ensures that the state space of the flip-flops is not broken down into isolated sub-cycles, allowing the LFSR to traverse every possible valid combination in a single, massive loop.
-
-**Why the example above fails this:** $x^4+x^3+x^2+x+1$ is the 5th cyclotomic polynomial, $\Phi_5(x) = \frac{x^5-1}{x-1}$. Its roots satisfy $\text{root}^5 = 1$, so they have multiplicative order 5 — not $2^4-1 = 15$. An LFSR built on this polynomial is irreducible (it won't lock up or factor into independent sub-registers), but it only cycles through **5** states before repeating, not the full 15.
-
-**A degree-4 polynomial that *is* primitive:** $x^4 + x + 1$. Its root generates the full multiplicative group of $GF(16)$, so an LFSR built on it visits all $2^4 - 1 = 15$ non-zero states before repeating — this is the property the design's actual polynomial, $x^{10}+x^7+1$ (below), is chosen to have at $n=10$.
-
----
 
 ## Selecting the Right Polynomial
 
@@ -48,7 +30,6 @@ $$P(x) = x^{10} + x^7 + 1$$
 
 This expression means that to generate the feedback signal, the outputs of the **10th bit** and the **7th bit** must be fed into an XOR gate.
 
----
 
 ## Interface
 
@@ -80,15 +61,6 @@ This expression means that to generate the feedback signal, the outputs of the *
 
 `lfsr_o` toggles pseudo-randomly once `enable_i` goes high — the "noisy" appearance across the ~10 µs trace is the expected behavior of an LFSR walking through its maximal-length sequence rather than a clean, repeating pattern.
 
----
-
-## Gotchas
-
-* **Seed vs. `POLY_MASK` alignment:** `data_r`'s initial value (the seed) has a single `'1'` at the MSB. If `POLY_MASK` doesn't also have a `'1'` at that index, the feedback is always `'0'` and the LFSR locks up at all-zero permanently. There's no `rst` port to recover from this at runtime — the seed only applies once, at elaboration/power-up.
-* **GHDL and generic-dependent aggregates:** the seed was originally written as `(DATA_WIDTH - 1 => '1', others => '0')`. GHDL rejects this with `non-locally static choice for an aggregate is allowed only if it is the only choice`, because `DATA_WIDTH - 1` depends on a generic and can't be mixed with `others`. Vivado tolerates this; GHDL doesn't. Fixed by using a concatenation instead, which has only one choice per aggregate: `'1' & (DATA_WIDTH - 2 downto 0 => '0')`.
-
----
-
 ## Detailed Code Explanation
 
 ### VHDL `variable` and the XOR Identity Element
@@ -101,3 +73,12 @@ This expression means that to generate the feedback signal, the outputs of the *
 * `data_r(i)` represents the polynomial term $x^{i+1}$. For the default `POLY_MASK = "1001000000"`, `data_r(9)` is the $x^{10}$ tap and `data_r(6)` is the $x^7$ tap. The `+1` constant term isn't a separate tap — it's just the wire that closes the loop, feeding `xor_feedback_v` back into `data_r(0)`.
 * The loop computes `Σ (data_r(i) AND POLY_MASK(i)) mod 2` — a dot product over GF(2). A `'0'` in `POLY_MASK` forces that term to `'0'` (a no-op for XOR); a `'1'` passes `data_r(i)` straight through.
 * Since `POLY_MASK` is a compile-time constant, synthesis unrolls the loop and optimizes away every AND gate fed by a constant `'0'`. What's left is just two AND gates and one XOR gate wired straight from `data_r(9)` and `data_r(6)` — there's no "loop" in the final netlist, just a static XOR tree shaped by wherever `POLY_MASK` has `'1'`s.
+
+---
+
+## Gotchas
+
+* **Seed vs. `POLY_MASK` alignment:** `data_r`'s initial value (the seed) has a single `'1'` at the MSB. If `POLY_MASK` doesn't also have a `'1'` at that index, the feedback is always `'0'` and the LFSR locks up at all-zero permanently. There's no `rst` port to recover from this at runtime — the seed only applies once, at elaboration/power-up.
+* **GHDL and generic-dependent aggregates:** the seed was originally written as `(DATA_WIDTH - 1 => '1', others => '0')`. GHDL rejects this with `non-locally static choice for an aggregate is allowed only if it is the only choice`, because `DATA_WIDTH - 1` depends on a generic and can't be mixed with `others`. Vivado tolerates this; GHDL doesn't. Fixed by using a concatenation instead, which has only one choice per aggregate: `'1' & (DATA_WIDTH - 2 downto 0 => '0')`.
+
+---
