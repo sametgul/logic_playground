@@ -12,6 +12,7 @@ Note: unlike the [Debouncer](../vhd03_debouncer/README.md) which separates the F
 |---------------------------|---------------------------------------------------------|
 | `src/uart_tx.vhd`         | Core UART TX FSM — parametric, 4-state                  |
 | `src/tb_uart_tx.vhd`      | Testbench — sends 0xAB then 0xCD, self-terminating      |
+| `src/tb_uart_tx_uvvm.vhd` | UVVM testbench — sends all 256 byte values, self-checking with the UVVM UART BFM |
 | `src/top_uart_tx.vhd`     | Top level — sends incrementing byte once per second     |
 | `src/top_uart_tx_btn.vhd` | Top level — sends 3 sequential bytes on button press    |
 
@@ -117,6 +118,53 @@ Self-contained testbench with a 100 MHz clock:
 Expected waveform:
 
 ![testbench](docs/testbench.png)
+
+---
+
+## UVVM Testbench (`tb_uart_tx_uvvm.vhd`)
+
+Self-checking version of the testbench, using the UART BFM that ships in [UVVM Light](../viv02_modelsim_setup/README.md) (`uvvm_util.uart_bfm_pkg`). For each value `0..255` it starts a transmission, lets `uart_expect` sample `tx_out` as a UART receiver would, and compares the decoded byte with the one sent.
+
+```vhdl
+data_in  <= std_logic_vector(to_unsigned(i, 8));
+start_tx <= '1';
+uart_expect(data_exp => std_logic_vector(to_unsigned(i, 8)), msg => "byte",
+            rx => tx_out, terminate_loop => terminate_loop,
+            config => uart_bfm_config, scope => C_SCOPE);
+wait for CLK_PERIOD;
+start_tx <= '0';
+await_value(tx_done, '0', 0 ns, BIT_TIME, ERROR, "tx_done low after stop bit", C_SCOPE);
+```
+
+Points worth knowing:
+
+* **Bit time**: `BIT_TIME = 868 * CLK_PERIOD` (8680 ns), not `1 / 115200`. The DUT divides `CLK_FREQ / BAUD_RATE` as an integer, so the BFM has to use the same 868 clocks.
+* **`start_tx` is held high** while the BFM receives, then dropped. The DUT only looks at `start_tx` in `s_IDLE`, and `uart_expect` returns in the middle of the stop bit, half a bit before the DUT is idle again. So `start_tx` is low again before the next byte can start and no second frame is triggered.
+* **`data_exp` is built from `i`, not `data_in`**: `data_in` is a signal and still holds the previous byte when `uart_expect` is called in the same delta.
+* **`tx_done` is a level, not a pulse**: it rises when the stop bit starts, which is before `uart_expect` returns. Waiting for its rising edge would hang, so the loop waits for it to fall (`await_value`), which marks the end of the frame and gives a time limit as well.
+* **Finite timeout**: `uart_bfm_config.timeout` is `20 * BIT_TIME`. A value of 0 means "never time out", which turns a dead DUT into a hung simulation.
+
+### Running it (ModelSim)
+
+* Compile `uart_tx.vhd`, then the testbench, as **VHDL-2008**. `vcom -2008` is needed for `context` and `std.env`.
+* `uvvm_util` must be mapped to the compiled UVVM Light library.
+* Start with `vsim work.tb_uart_tx_uvvm`, then `run -all`. The full 256 bytes take about 22 ms of simulated time, so the free ModelSim edition is slow here.
+
+Example output (first byte, `STOP_BIT = 1`):
+
+```
+UVVM: ID_BFM_WAIT       100.0 ns  TB seq.  Expecting data x"00" within 1 occurrences and 173600 ns. byte
+UVVM: ID_BFM          82560.0 ns  TB seq.  uart_expect(x"00")=> OK, received data = x"00" after 1 occurrences and 82460 ns. 'byte'
+UVVM: ID_POS_ACK      86900.0 ns  TB seq.  await_value(sl, 0, 0 ns, 8680 ns) => OK. Condition occurred after 4330 ns. 'tx_done low after stop bit'
+```
+
+`uart_expect` returns 82.46 µs after the start bit, 9.5 bit times in, in the middle of the stop bit. `tx_done` falls half a bit later.
+
+### Verification Coverage
+
+Covers the happy path: all 256 data values, LSB-first bit order, start and stop bit levels as seen by a receiver, and `tx_done` going low at the end of every frame.
+
+Not covered yet: exact start and stop bit widths (the BFM samples mid-bit, so a bit that is a few clocks too long or short still passes), `start_tx` pulses during a busy frame, back-to-back frames with no idle gap, `start_tx` held high, and `STOP_BIT = 2`.
 
 ---
 
