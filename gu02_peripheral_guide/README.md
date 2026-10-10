@@ -112,8 +112,6 @@ Before going to hardware:
 - **Timing constraints pass** — add a `create_clock` constraint for every clock; check the timing summary for negative slack
 - **Clock domain crossings** — if any signal crosses clock domains, we need to take care of them. Vivado will warn but not always catch functional CDC bugs
 
-> **AD5628 example:** using Clock Wizard to generate 100 MHz from 12 MHz means `clk` and `clk100` are different domains. All logic is driven by `clk100`; the raw `clk` connects only to the Clock Wizard input. No CDC paths.
-
 ---
 
 ## Step 7 — Hardware Verification

@@ -13,38 +13,6 @@ When the input toggles, the system enters a transition state and waits a fixed t
 
 ---
 
-## Running the UVVM Testbench
-
-Requires GHDL and the compiled UVVM libraries (`~/Projects/uvvm_build/ghdl`).
-
-```sh
-make          # compile, run, and write wave.vcd
-make clean    # remove build outputs
-```
-
-The log prints to the terminal. Each check shows as `check_value(...) => OK` or `Failed`, and the run ends with `Simulation SUCCESS` or `FAILED`.
-
-To view the waveform, open `wave.vcd` in GTKWave, or click **Waveform** in TerosHDL's TESTBENCHES panel after running the testbench there.
-
-### Example Output
-
-```
-UVVM: ID_POS_ACK     2000000.0 ns  TB seq.  check_value(sl, 1) => OK. Value was 1. 'Output idle high after startup'
-UVVM: ID_POS_ACK     9000000.0 ns  TB seq.  check_value(sl, 1) => OK. Value was 1. '3 ms glitch rejected'
-UVVM: ID_POS_ACK    18000000.0 ns  TB seq.  check_value(sl, 0) => OK. Value was 0. 'Press accepted after debounce time'
-UVVM: ID_POS_ACK    28000000.0 ns  TB seq.  check_value(sl, 1) => OK. Value was 1. 'Release accepted after debounce time'
-UVVM: ID_POS_ACK    33000000.0 ns  TB seq.  await_value(sl, 0, 4000000 ns, 7000000 ns) => OK. Condition occurred after 5000000 ns. 'Press debounced within window'
-UVVM:      >> Simulation SUCCESS: No mismatch between counted and expected serious alerts
-```
-
-A failing check reports `=> Failed`, with the expected and actual values, and the final line reads `Simulation FAILED` instead.
-
-### Verification Coverage
-
-This testbench covers Tier 1 (reset/startup, happy path, and the spec-defined corner case — the glitch shorter than the debounce time). It doesn't cover Tier 2 cases such as a press at the exact debounce boundary, an input changing exactly on a clock edge, or a second bounce arriving mid-debounce. Those are reasonable next tests, but weren't needed to put this design on hardware.
-
----
-
 ## FSM Design
 
 Assuming the buttons are active-low:
@@ -147,6 +115,37 @@ Tip: Put `state`, `tim_en`, `tim_tick`, `timer`, `sig_in`, and `sig_out` on your
 ## Before Using on Real Hardware
 
 `sig_in` is sampled directly inside a clocked process, with no synchronizer in front of it. A physical button is asynchronous to the FPGA clock, so sampling it directly risks metastability. This isn't something simulation can catch, since simulation doesn't model metastability — it's a design pattern to apply because the input is known to be asynchronous. See `vhd14_synchronizer` and `vhd15_CDC` in this repo before wiring this to a real button.
+
+## Running the UVVM Testbench
+
+Requires GHDL and the compiled UVVM libraries (`~/Projects/uvvm_build/ghdl`).
+
+```sh
+make          # compile, run, and write wave.vcd
+make clean    # remove build outputs
+```
+
+The log prints to the terminal. Each check shows as `check_value(...) => OK` or `Failed`, and the run ends with `Simulation SUCCESS` or `FAILED`.
+
+To view the waveform, open `wave.vcd` in GTKWave, or click **Waveform** in TerosHDL's TESTBENCHES panel after running the testbench there.
+
+### Example Output
+
+```
+UVVM: ID_POS_ACK     2000000.0 ns  TB seq.  check_value(sl, 1) => OK. Value was 1. 'Output idle high after startup'
+UVVM: ID_POS_ACK     9000000.0 ns  TB seq.  check_value(sl, 1) => OK. Value was 1. '3 ms glitch rejected'
+UVVM: ID_POS_ACK    18000000.0 ns  TB seq.  check_value(sl, 0) => OK. Value was 0. 'Press accepted after debounce time'
+UVVM: ID_POS_ACK    28000000.0 ns  TB seq.  check_value(sl, 1) => OK. Value was 1. 'Release accepted after debounce time'
+UVVM: ID_POS_ACK    33000000.0 ns  TB seq.  await_value(sl, 0, 4000000 ns, 7000000 ns) => OK. Condition occurred after 5000000 ns. 'Press debounced within window'
+UVVM:      >> Simulation SUCCESS: No mismatch between counted and expected serious alerts
+```
+
+A failing check reports `=> Failed`, with the expected and actual values, and the final line reads `Simulation FAILED` instead.
+
+### Verification Coverage
+
+This testbench covers Tier 1 (reset/startup, happy path, and the spec-defined corner case — the glitch shorter than the debounce time). It doesn't cover Tier 2 cases such as a press at the exact debounce boundary, an input changing exactly on a clock edge, or a second bounce arriving mid-debounce. Those are reasonable next tests, but weren't needed to put this design on hardware.
+
 
 ## References
 

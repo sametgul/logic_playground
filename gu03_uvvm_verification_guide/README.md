@@ -1,52 +1,6 @@
 # UVVM Verification Guide
 
-How this repo runs self-checking testbenches with UVVM (Universal VHDL Verification Methodology) and GHDL, and how much testbench coverage a design actually needs. Worked example: [vhd03_debouncer](../vhd03_debouncer/README.md).
-
-## Why UVVM
-
-A plain testbench (see `tb_debouncer.vhd` for an example) drives stimulus and leaves you to read the waveform and judge pass/fail by eye. UVVM adds a self-checking layer: `check_value` and `await_value` compare a signal against an expected value, log the result, and count it as an alert. At the end of the run, UVVM reports a single verdict — `Simulation SUCCESS` or `Simulation FAILED` — so you don't have to re-read the waveform every time the design changes.
-
-This guide uses GHDL. For UVVM through Vivado's ModelSim integration instead, see [ModelSim Setup with Vivado](../viv02_modelsim_setup/README.md).
-
-## One-Time Setup
-
-Requires GHDL (VHDL-2008 support) and a clone of [UVVM](https://github.com/UVVM/UVVM), compiled once.
-
-```sh
-# Clone UVVM somewhere outside this repo
-git clone https://github.com/UVVM/UVVM.git ~/Projects/UVVM
-
-# Compile all UVVM libraries for GHDL into a separate build folder
-mkdir -p ~/Projects/uvvm_build
-sh ~/Projects/UVVM/script/compile_all.sh ghdl ~/Projects/uvvm_build
-```
-
-This produces compiled libraries in `~/Projects/uvvm_build/ghdl`. Every testbench's GHDL commands need `-P~/Projects/uvvm_build/ghdl` to find them.
-
-## Per-Module Setup
-
-Each module with a UVVM testbench gets its own `Makefile` (see `vhd03_debouncer/Makefile` for the working example) and a module-level `.gitignore` for the build output:
-
-```make
-UVVM_LIBS := $(HOME)/Projects/uvvm_build/ghdl
-GHDL      := ghdl
-GHDLFLAGS := --std=08 -frelaxed -fsynopsys -P$(UVVM_LIBS)
-TB        := tb_<name>_uvvm
-SRC       := src/<design>.vhd src/$(TB).vhd
-
-all: run
-analyze: $(SRC)
-	$(GHDL) -a $(GHDLFLAGS) $(SRC)
-elab: analyze
-	$(GHDL) -e $(GHDLFLAGS) $(TB)
-run: elab
-	$(GHDL) -r $(GHDLFLAGS) $(TB) --vcd=wave.vcd
-clean:
-	rm -f *.o $(TB) wave.vcd work-obj08.cf UVVM_Alert.txt UVVM_Log.txt build.log
-.PHONY: all analyze elab run clean
-```
-
-Run with `make`; clean with `make clean`. The Makefile reruns every step on each call — it doesn't track per-file changes — which is fine at this scale.
+How this repo runs self-checking testbenches with UVVM (Universal VHDL Verification Methodology), and how much testbench coverage a design actually needs. For UVVM through Vivado's ModelSim integration, see [ModelSim Setup with Vivado](../viv02_modelsim_setup/README.md).
 
 ## Testbench Skeleton
 
@@ -97,8 +51,6 @@ UVVM:      >> Simulation SUCCESS: No mismatch between counted and expected serio
 - The last line is the verdict: `Simulation SUCCESS` or `Simulation FAILED`.
 - UVVM stops the run after the first `ERROR` by default (`STOP_LIMIT`). To see every failure in one run instead of just the first, raise the limit at the top of the test process: `set_alert_stop_limit(ERROR, 0);`.
 
-**Trust the result, not just the verdict.** A testbench with no stimulus also reports `SUCCESS` — it just didn't check anything. Confirm the checks you expect actually ran and the waveform shows the stimulus you intended (`wave.vcd`, opened in GTKWave or a similar viewer).
-
 ## How Much to Test: Verification Tiers
 
 Not every design needs the same depth of testing. Scale it by: *What happens if this is wrong? How complex is the design? Will this be reused?*
@@ -119,11 +71,7 @@ Not every design needs the same depth of testing. Scale it by: *What happens if 
 - A full regression suite
 - Formal verification (a separate discipline — see note below) for critical invariants
 
-Most testbenches in this repo are, and should be, Tier 1 with directed stimulus. Tier 3 is professional/ASIC-team-scale effort, not a bar for a personal FPGA project.
-
-**Formal verification is a different technique, not a deeper tier of simulation.** A solver proves a property holds for *all* reachable states instead of running time-ordered stimulus. The toolchain for it (`sby`/SymbiYosys, `yosys`, `yosys_ghdl`, and solvers like `boolector`/`z3`) comes bundled with oss-cad-suite, if that's ever installed for waveform viewing on this machine, but it's a separate skill from UVVM and isn't covered in this guide.
-
-**What simulation can't catch:** metastability from an asynchronous input (e.g. a physical button) sampled directly into a clocked process. Simulation doesn't model it. The fix is a design pattern — a synchronizer — applied because the input is known to be asynchronous, not a test. See [vhd14_synchronizer](../vhd14_synchronizer/README.md).
+Most testbenches in this repo are Tier 1 with directed stimulus. Tier 3 is professional/ASIC-team-scale effort, not a bar for a personal FPGA project.
 
 ## Worked Example
 

@@ -236,8 +236,7 @@ I will cover these in detail in future projects and link back here.
 
 ## References
 
-1. [Mehmet Burak Aykenar - Github Repo](https://github.com/mbaykenar/apis_anatolia)
-2. [VHDL ile FPGA PROGRAMLAMA](https://www.udemy.com/course/vhdl-ile-fpga-programlama-temel-seviye/)
+1. [VHDL ile FPGA PROGRAMLAMA](https://www.udemy.com/course/vhdl-ile-fpga-programlama-temel-seviye/)
 
 ---
 ⬅️ [MAIN PAGE](../README.md) | ⬅️ [VHDL Template](../gu00_vhdl_template/README.md) | ➡️  [Peripheral Driver Guide](../gu02_peripheral_guide/README.md)
