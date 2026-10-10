@@ -1,8 +1,0 @@
-# Simulation build output
-*.o
-*.cf
-wave.vcd
-UVVM_Alert.txt
-UVVM_Log.txt
-build.log
-tb_lfsr_uvvm
