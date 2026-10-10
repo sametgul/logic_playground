@@ -30,7 +30,7 @@ A structured personal repository for FPGA development — covering guides, RTL d
 | 10 | [SPI Master — With CS/Idle Timing](vhd12_cs_timing/README.md) | Parameterized CS and IDLE delay times, dead-time enforcement between frames |
 | 11 | [CDC Synchronizer + Synchronized UART RX](vhd14_synchronizer/README.md) | Generic N-stage synchronizer, `ASYNC_REG` attribute, CDC applied to an async serial input |
 | 12 | [Clock Domain Crossing — Pulse Synchronizer](vhd15_CDC/README.md) | Toggle-based pulse synchronizer, `set_max_delay` CDC timing constraints, reset synchronization |
-| 13 | `vhd18_async_fifo` — *coming soon* | Asynchronous FIFO for CDC data transfer |
+| 13 | [Asynchronous FIFO — Xilinx FIFO Generator, Smoke Tests](vhd18_async_fifo/README.md) | Independent-clock FIFO IP in ModelSim, read latency, `empty` delay vs. synchronizer stages, `overflow`/`underflow` flags |
 
 ---
 
