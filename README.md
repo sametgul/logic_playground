@@ -75,7 +75,7 @@ A structured personal repository for FPGA development — covering guides, RTL d
 | # | Project | Key Concept |
 |---|---------|-------------|
 | 0 | [AXI GPIO — Switch to LED](z00_axi_gpio/README.md) | Zynq PS + AXI GPIO block design, ZedBoard JTAG/UART bring-up, boot mode jumpers |
-| 1 | [Custom AXI4-Lite IP — Switch to LED](z01_custom_AXI4_per/README.md) | Packaging a custom AXI4-Lite peripheral, register map design, IP repository workflow |
+| 1 | [Custom AXI4-Lite IP — Switch to LED](z01_custom_AXI4_per/README.md) | Packaging a custom AXI4-Lite peripheral, register map design, IP repository workflow, UVVM testbenches (smoke test and register-level, with the AXI-Lite BFM) |
 
 ---
 

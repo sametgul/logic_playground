@@ -108,6 +108,40 @@ Wrapper** for the block design. Add an XDC constraints file that maps the
 `switches` and `led_o` ports to the physical pins for your board, matching
 the I/O standard and voltage of the switches/LEDs used.
 
+For the ZedBoard, the on-board DIP switches (SW0 to SW7) and user LEDs (LD0 to
+LD7) are used. The pins below come from
+[Zedboard-Master.xdc](../XDC%20Files/Zedboard-Master.xdc) in this repo. The port
+names are the ones used in this walkthrough, so change them if the external
+ports of your block design are named differently.
+
+```tcl
+# User LEDs, bank 33 (fixed to 3.3 V on the ZedBoard)
+set_property PACKAGE_PIN T22 [get_ports {led_o[0]}]
+set_property PACKAGE_PIN T21 [get_ports {led_o[1]}]
+set_property PACKAGE_PIN U22 [get_ports {led_o[2]}]
+set_property PACKAGE_PIN U21 [get_ports {led_o[3]}]
+set_property PACKAGE_PIN V22 [get_ports {led_o[4]}]
+set_property PACKAGE_PIN W22 [get_ports {led_o[5]}]
+set_property PACKAGE_PIN U19 [get_ports {led_o[6]}]
+set_property PACKAGE_PIN U14 [get_ports {led_o[7]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {led_o[*]}]
+
+# DIP switches, bank 35 (bank voltage follows the VADJ jumper J18, 1.8 V by default)
+set_property PACKAGE_PIN F22 [get_ports {switches[0]}]
+set_property PACKAGE_PIN G22 [get_ports {switches[1]}]
+set_property PACKAGE_PIN H22 [get_ports {switches[2]}]
+set_property PACKAGE_PIN F21 [get_ports {switches[3]}]
+set_property PACKAGE_PIN H19 [get_ports {switches[4]}]
+set_property PACKAGE_PIN H18 [get_ports {switches[5]}]
+set_property PACKAGE_PIN H17 [get_ports {switches[6]}]
+set_property PACKAGE_PIN M15 [get_ports {switches[7]}]
+set_property IOSTANDARD LVCMOS18 [get_ports {switches[*]}]
+```
+
+If the VADJ jumper is set to 2.5 V or 3.3 V, the switch I/O standard has to be
+changed to match (`LVCMOS25` or `LVCMOS33`), as the comments in the master file
+explain.
+
 ![Completed block design](images/completed_block_design.png)
 
 ## 9. Export hardware and build the application
@@ -258,6 +292,26 @@ The testbenches wrap `axilite_write` and `axilite_check` in local procedures so 
 - Set `c_axi_addr_width` and `c_axi_data_width` to the IP's generics.
 - Update the register addresses and the expected values to the new register map.
 - The IP in this project always answers `OKAY`, so there is no error-response test. For an IP that returns `SLVERR`, set `expected_response` in the BFM config before the transaction that should fail.
+
+## 13. Limitations and Not Covered Yet
+
+What this IP does and does not do, read from its RTL, and what the testbenches do and do not check:
+
+**The IP**
+* **Responses are always `OKAY`.** `bresp` and `rresp` are fixed to `"00"` (the RTL comment says the responses need more work). With four registers every address is in range, so there is no `SLVERR` or `DECERR` case, and the low two address bits are ignored, so an unaligned address is accepted too.
+* **A write needs address and data together.** The slave raises `awready` and `wready` only when `AWVALID` and `WVALID` are both high. A master that sends them in different clocks just waits for the other channel, which AXI allows.
+* **One write at a time.** A new write is not accepted until the previous response has been taken (`aw_en` in the RTL), so there are no outstanding transactions.
+* **The functional registers are only `reg0` (switches) and `reg1[7:0]` (LEDs).** `reg2` and `reg3` are plain storage with no output.
+
+**The testbenches**
+* They cover the register behavior: reset values, read-only `reg0`, address decode, walking ones, partial writes, and a deliberate failure.
+* **Not covered:** back-pressure (`BREADY` or `RREADY` held low for a while), address and data arriving in different clocks, back-to-back transactions at full speed, and a read and a write at the same time. The BFM always sends address and data together and is always ready for the response, so these would need hand-driven stimulus.
+
+**On the board**
+* The switch-to-LED loop of `helloworld.c` is the only thing run in hardware so far. The register behaviors checked in simulation (read-only `reg0`, `reg2` and `reg3` storage, partial writes) have not been run from the PS yet. A short C program that repeats the same checks with `Xil_Out32`, `Xil_In32` and `Xil_Out8` and prints PASS or FAIL over the UART would close that gap.
+
+**The repo**
+* Only the VHDL sources are stored. The packaging files Vivado generates (`component.xml`, the GUI files) are not, so to rebuild the IP, repeat steps 1 to 5 and replace the generated sources with the ones in `src/`.
 
 ## References
 
