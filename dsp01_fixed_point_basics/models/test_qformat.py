@@ -11,8 +11,10 @@ def test_round_nearest_ties():
 
 
 def test_truncate():
+    # truncate = floor, not round-toward-zero: dropping LSBs always rounds
+    # toward -infinity, so a negative input rounds further negative.
     assert to_int(1.9, frac_bits=0, round_mode="truncate") == 1
-    assert to_int(-1.9, frac_bits=0, round_mode="truncate") == -1
+    assert to_int(-1.9, frac_bits=0, round_mode="truncate") == -2
 
 
 def test_round_trip():
