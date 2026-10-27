@@ -2,5 +2,10 @@
 .DS_Store
 Thumbs.db
 
+# Python
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+
 # Personal notes
 future_works.md
