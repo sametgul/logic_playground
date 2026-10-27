@@ -14,9 +14,9 @@ Replicate the demodulator filter chain used in the Stanford SR860 and Zurich Ins
 
 ## Roadmap (build in this order)
 
-0. Fixed-point basics — shared Q-format quantize/round/saturate helper (`dsp01_ema_filter/models/qformat.py`, first consumer is phase 1; later blocks' `models/` import it via relative path). Not a VHDL block itself, just the infra every later fixed-point model reuses.
-1. `dsp01_ema_filter` — single EMA stage, fixed-point
-2. `dsp02_ema_cascade` — n-stage cascade, runtime-configurable τ/order
+0. `dsp01_fixed_point_basics` — shared Q-format quantize/round/saturate helper (`models/qformat.py`; later blocks' `models/` import it via relative path). Not a VHDL block itself, just the infra every later fixed-point model reuses. **Status: done.**
+1. `dsp02_ema_filter` — single EMA stage, fixed-point. **Not started yet** — don't jump ahead to this.
+2. `dsp03_ema_cascade` — n-stage cascade, runtime-configurable τ/order
 3. NCO + mixer (may reuse/extend `ip00_sine_dds_block`'s DDS compiler work rather than a fresh `dsp0X`)
 4. `dsp0X_cic_decimator` — CIC decimation ahead of the LPF, plus CIC compensation FIR for passband droop
 5. `dsp0X_sinc_filter`
@@ -31,7 +31,7 @@ Follow the existing `dsp0X_name/{README.md,docs/,src/}` convention per block (se
 Each block goes through five steps, in order, to isolate which layer broke when something's wrong:
 
 1. **Float model** (Python, in `models/`) — is the algorithm right? Check frequency response, step response, noise bandwidth against theory.
-2. **Fixed-point model** (Python, same `models/` folder, e.g. `ema_fixed.py` alongside `ema_float.py`) — same algorithm, exact bit widths/rounding/saturation the VHDL will use, built on the phase-0 `qformat.py` helper. Compare against the float model; this is where bit widths get chosen, before any VHDL.
+2. **Fixed-point model** (Python, same `models/` folder, e.g. `ema_fixed.py` alongside `ema_float.py`) — same algorithm, exact bit widths/rounding/saturation the VHDL will use, built on `dsp01_fixed_point_basics/models/qformat.py`. Compare against the float model; this is where bit widths get chosen, before any VHDL.
 3. **VHDL implementation** — direct translation of the fixed-point model. No design decisions left at this point.
 4. **Bit-exact simulation** — the fixed-point model generates input/expected-output vectors; the GHDL/NVC + UVVM testbench (on the Mac) must match exactly, including random AXI4-Stream stalls. Any mismatch here is a VHDL bug, since the algorithm was already proven in steps 1-2.
 5. **Hardware test** (Windows machine at the lab) — synthesize, check timing/resources, run on the board. Compare against the MFLI/SR860 with the same input signal where possible.
@@ -49,4 +49,4 @@ Does not work here: Vivado (no macOS build; Apple Silicon VM is painful, needs x
 
 ## Open question
 
-ADC sample rate and the range of τ actually used in experiments — not yet answered. This determines accumulator bit-widths per EMA stage and whether/where multirate decimation becomes mandatory rather than just good practice. Ask before finalizing bit-widths in `dsp01_ema_filter`/`dsp02_ema_cascade`.
+ADC sample rate and the range of τ actually used in experiments — not yet answered. This determines accumulator bit-widths per EMA stage and whether/where multirate decimation becomes mandatory rather than just good practice. Ask before finalizing bit-widths in `dsp02_ema_filter`/`dsp03_ema_cascade`.
