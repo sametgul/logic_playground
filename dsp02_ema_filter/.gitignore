@@ -1,0 +1,6 @@
+# Simulation build output
+*.o
+*.cf
+work/
+tb_ema_filter
+tb_ema_filter_guard_bits
