@@ -1,5 +1,7 @@
 # Test Signals (stimulus generator)
 
+Part 2 of the DSP series: builds on [dsp01 Q-format basics](../dsp01_fixed_point_basics/README.md) and feeds the filters that follow, starting with [dsp03 EMA filter](../dsp03_ema_filter/README.md).
+
 Generates the input signals used to test the DSP blocks (EMA filter, later the cascade and demodulator): sines, compound sines, noisy sines, step, impulse, chirp. Python is the **single source of truth** — it quantizes each signal to Q-format and writes integer files that the VHDL testbenches and the Python golden models both read, so a mismatch downstream is a real DUT bug and not a stimulus difference.
 
 ```
@@ -64,7 +66,7 @@ The integer code is `real_value * 2^FRAC_BITS`. A Qm.f word has `m + f` bits, wi
 - **Keep the peak below `2^(INT_BITS-1)`.** Amplitudes add: 0.8 + 0.5 = 1.3 fits Q2.15, but 1.0 sine + 1.0 noise peaks can exceed 2. Samples beyond the range are saturated (clamped), not wrapped, and the generator prints `(N SATURATED)` so you notice.
 - **Noise is reproducible only with a fixed seed.** Same `SEED` and `N` give the same file every run; change `SEED` for a different noise realisation.
 - **Frequencies must be below Fs/2.** `sine(600, ...)` at Fs = 1 kHz silently aliases to 400 Hz.
-- **Changing Fs changes the filter coefficient.** The stimulus files are just sample sequences with no notion of time; if you replay them at a different rate, recompute `alpha` with `alpha_from_tau` in `dsp02_ema_filter/models/ema_float.py` for the new Ts.
+- **Changing Fs changes the filter coefficient.** The stimulus files are just sample sequences with no notion of time; if you replay them at a different rate, recompute `alpha` with `alpha_from_tau` in `dsp03_ema_filter/models/ema_float.py` for the new Ts.
 - **A 2048-sample record at 1 kHz lasts ~2 s**, which is slow on a scope. For hardware, replay at a higher rate (and recompute `alpha`).
 
 ## Requirements

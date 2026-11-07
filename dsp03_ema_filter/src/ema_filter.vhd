@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
 
--- Direct VHDL translation of dsp02_ema_filter/models/ema_fixed.py: see that
+-- Direct VHDL translation of dsp03_ema_filter/models/ema_fixed.py: see that
 -- file (and required_guard_bits) for why the accumulator needs GUARD_BITS
 -- of extra fractional precision beyond the native input/output word.
 entity ema_filter is

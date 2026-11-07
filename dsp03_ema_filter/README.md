@@ -1,11 +1,13 @@
 # EMA Filter (Single Stage)
 
+Part 3 of the DSP series: uses the Q-format helper from [dsp01](../dsp01_fixed_point_basics/README.md) and the stimulus files from [dsp02](../dsp02_test_signals/README.md).
+
 A single EMA (exponential moving average) stage is a first-order IIR low-pass: `y[n] = y[n-1] + alpha*(x[n] - y[n-1])`. This is the building block behind the time-constant filter in the SR860/MFLI demodulators — a cascade of these is what later gives the 6/12/18/24 dB/oct slopes.
 
 Float model, fixed-point model, VHDL implementation and a bit-exact verification flow (golden model + compare script) are in place. The file-driven VHDL testbench that closes the loop is the remaining piece.
 
 ```
-dsp03 stimulus/<name>.txt ─┬─► tb (textio) ──► DUT ──► sim/<name>_actual.txt ─┐
+dsp02 stimulus/<name>.txt ─┬─► tb (textio) ──► DUT ──► sim/<name>_actual.txt ─┐
                            └─► gen_expected.py (ema_filter_codes) ───────────►├─► compare.py
                                                  sim/<name>_expected.txt ─────┘
 ```
@@ -17,7 +19,7 @@ dsp03 stimulus/<name>.txt ─┬─► tb (textio) ──► DUT ──► sim/<
   - `ema_filter_fixed` — float-valued, built on `dsp01_fixed_point_basics`'s `qformat.py`, for exploring widths and guard bits. Also has `required_guard_bits`, which sizes the accumulator so a tiny `alpha` doesn't stall the filter (see Gotchas).
   - `ema_filter_codes` (+ `alpha_to_code`) — pure integer arithmetic, the **bit-exact twin of `ema_filter.vhd`**; this is the golden reference for simulation.
 - `models/test_ema_float.py`, `models/test_ema_fixed.py` — directed tests (`python test_ema_fixed.py`): step response vs analytic, -3 dB point vs `scipy`, the stall and its guard-bit fix, saturation, round-half-up ties, and that the float and integer models agree bit-for-bit.
-- `models/gen_expected.py` — runs a dsp03 stimulus file through `ema_filter_codes` and writes the expected output (one integer code per line).
+- `models/gen_expected.py` — runs a dsp02 stimulus file through `ema_filter_codes` and writes the expected output (one integer code per line).
 - `models/compare.py` — diffs expected vs actual; exit code 0 only if every sample is identical.
 - `src/ema_filter.vhd` — the implementation (AXI-stream style handshake, synchronous reset, generics `INT_BITS` / `FRAC_BITS` / `GUARD_BITS`).
 - `src/tb_ema_filter.vhd` — smoke test: constant step, output checked against the Python value within a tolerance.
@@ -32,7 +34,7 @@ Use `python` (needs numpy only for `ema_float`/the tests; the integer model itse
 cd models
 
 # 1. expected output for a stimulus (prints the alpha code to use in the testbench)
-python gen_expected.py ../../dsp03_test_signals/stimulus/sine_10hz.txt \
+python gen_expected.py ../../dsp02_test_signals/stimulus/sine_10hz.txt \
        -o ../sim/sine_10hz_expected.txt --tau 10e-3 --ts 1e-3
 
 # 2. run the VHDL testbench on the same stimulus -> ../sim/sine_10hz_actual.txt
@@ -55,7 +57,7 @@ Two ways to close the gap: make the VHDL do round-half-away (needs sign-dependen
 
 **The float model is not bit-exact at wide formats.** At the VHDL defaults (Q3.21 + 20 guard bits) `diff * alpha` is ~84 bits, past float64's 53-bit mantissa, so `ema_filter_fixed` silently rounds intermediates. Use `ema_filter_codes` for bit-exact work.
 
-**Known VHDL edge case: `diff` can overflow.** `ema_filter.vhd` computes `diff := x_aligned - y_acc_r` in `ACC_WIDTH` bits with a plain `-`. Both operands are in range, but their difference can be up to twice the range, so a large swing (e.g. input at +rail while the output sits near −rail) wraps. The golden model uses ideal arithmetic and `gen_expected.py` prints a warning with the count when this happens in a given stimulus; none of the standard dsp03 signals trigger it. Fix when it matters: compute `diff` in `ACC_WIDTH + 1` bits (the product width already has room).
+**Known VHDL edge case: `diff` can overflow.** `ema_filter.vhd` computes `diff := x_aligned - y_acc_r` in `ACC_WIDTH` bits with a plain `-`. Both operands are in range, but their difference can be up to twice the range, so a large swing (e.g. input at +rail while the output sits near −rail) wraps. The golden model uses ideal arithmetic and `gen_expected.py` prints a warning with the count when this happens in a given stimulus; none of the standard dsp02 signals trigger it. Fix when it matters: compute `diff` in `ACC_WIDTH + 1` bits (the product width already has room).
 
 ## Open question
 

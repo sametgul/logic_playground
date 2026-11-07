@@ -1,12 +1,12 @@
 """Generate the expected (golden) output file for the bit-exact VHDL comparison.
 
-Reads a stimulus file from dsp03_test_signals (one signed integer code per
+Reads a stimulus file from dsp02_test_signals (one signed integer code per
 line), runs it through the integer EMA model, and writes the expected output
 codes in the same one-integer-per-line format the VHDL testbench writes.
 
 Example (the standard setup: Q2.15, Ts = 1 ms, tau = 10 ms -> alpha code 3118):
 
-    python3 gen_expected.py ../../dsp03_test_signals/stimulus/sine_10hz.txt \
+    python3 gen_expected.py ../../dsp02_test_signals/stimulus/sine_10hz.txt \
         -o ../sim/sine_10hz_expected.txt --tau 10e-3 --ts 1e-3
 
 The alpha code is printed so you can paste the same number into the testbench.
