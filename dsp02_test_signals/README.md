@@ -13,7 +13,8 @@ gen_signals.py ──► stimulus/<name>.txt ──► VHDL testbench (textio) �
 ## What's here
 
 - `models/gen_signals.py` — building blocks (`sine`, `square`, `chirp`, `step`, `impulse`, `dc`, `gaussian_noise`, `uniform_noise`, `add`, `scale`), quantization (`to_codes`) and file writing (`generate`). Running it directly writes the standard set and `docs/signals.png`.
-- `notebooks/generate_signals.ipynb` — the interactive version: change sample rate, length, word format and signal definitions, look at time-domain and spectrum plots, then write files.
+- `notebooks/generate_signals.ipynb` — the interactive version: change sample rate, length, word format and signal definitions, look at time-domain and spectrum plots, then write files. It also explains how to read a magnitude spectrum: tones, dB levels, FFT bins, windows and leakage, why a square wave has odd harmonics, and aliasing / the Nyquist limit `Fs/2`.
+- `notebooks/generate_signals_tr.ipynb` — the same notebook in Turkish (Türkçe sürüm).
 - `stimulus/` — the standard set (committed, so testbenches work without running Python).
 - `stimulus_custom/` — default output of the notebook (git-ignored).
 - `docs/signals.png` — plot of the standard set.
