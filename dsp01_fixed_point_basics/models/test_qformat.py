@@ -10,6 +10,17 @@ def test_round_nearest_ties():
     assert to_int(0.25, frac_bits=1) == 1       # 0.25 * 2 = 0.5 -> 1
 
 
+def test_round_half_up_ties():
+    # ties go toward +infinity: same as "nearest" for positives, differs for negatives
+    assert to_int(0.5, frac_bits=0, round_mode="half_up") == 1
+    assert to_int(-0.5, frac_bits=0, round_mode="half_up") == 0     # nearest: -1
+    assert to_int(-1.5, frac_bits=0, round_mode="half_up") == -1    # nearest: -2
+    assert to_int(-2.5, frac_bits=0, round_mode="half_up") == -2    # nearest: -3
+    # non-ties round to the closest integer as usual
+    assert to_int(-1.4, frac_bits=0, round_mode="half_up") == -1
+    assert to_int(-1.6, frac_bits=0, round_mode="half_up") == -2
+
+
 def test_truncate():
     # truncate = floor, not round-toward-zero: dropping LSBs always rounds
     # toward -infinity, so a negative input rounds further negative.

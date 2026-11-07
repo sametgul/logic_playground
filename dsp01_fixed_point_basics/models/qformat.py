@@ -22,6 +22,13 @@ def to_int(x, frac_bits, round_mode="nearest"):
         return math.floor(scaled)
     if round_mode == "nearest":
         return int(scaled + 0.5) if scaled >= 0 else -int(-scaled + 0.5)
+    if round_mode == "half_up":
+        # Round to nearest, ties toward +infinity: floor(x + 0.5). This is
+        # exactly what hardware gets from "add half an LSB, then drop the low
+        # bits" - the add-and-arithmetic-shift is a floor. It differs from
+        # "nearest" (ties away from zero) only on negative exact ties,
+        # e.g. -2.5 -> -2 here but -3 under "nearest".
+        return math.floor(scaled + 0.5)
     raise ValueError(f"unknown round_mode: {round_mode}")
 
 
