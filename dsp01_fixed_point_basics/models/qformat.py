@@ -11,7 +11,8 @@ count of sixteenths (0.3 * 16 = 4.8 -> rounds to the integer 5).
 
 import math
 
-
+# (1 << frac_bits) => 2**frac_bits, 2 to the power of frac_bits
+# the scale factor for Qm.f
 def to_int(x, frac_bits, round_mode="nearest"):
     """Convert a float to its Q-format integer code (no saturation)."""
     scaled = x * (1 << frac_bits)  # x measured in ticks of size 2**-frac_bits

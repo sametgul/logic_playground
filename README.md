@@ -96,7 +96,10 @@ A structured personal repository for FPGA development — covering guides, RTL d
 | # | Project | Key Concept |
 |---|---------|-------------|
 | 0 | [Pseudo-Random Number Generator using LFSR](dsp00_lfsr/README.md) | Maximum-length sequences, irreducible characteristic polynomials |
-| 1 | `dsp01_dds_from_scratch` — *coming soon* | Phase accumulator, ROM LUT, frequency resolution |
+| 1 | [Fixed-Point Basics (Q-Format Helpers)](dsp01_fixed_point_basics/README.md) | Qm.f codes, rounding modes (truncate / nearest / half-up), saturation |
+| 2 | [Test Signals (stimulus generator)](dsp02_test_signals/README.md) | Q-format stimulus files shared by VHDL testbenches and Python golden models |
+| 3 | [EMA Filter](dsp03_ema_filter/README.md) | First-order IIR, guard bits, bit-exact VHDL vs. Python verification |
+| 4 | `dsp04_dds_from_scratch` — *coming soon* | Phase accumulator, ROM LUT, frequency resolution |
 
 ---
 
